@@ -59,6 +59,25 @@ func _materials() -> void:
 	_mat("plant2", Color("#77734d"))
 	_mat("rock", Color("#716b5a"))
 	_mat("black", Color("#1b1e1e"))
+	# Add world-space surface patina: mottled asphalt, oxidized steel and concrete.
+	var patina: Shader = preload("res://shaders/grunge.gdshader")
+	var finish: Dictionary = {
+		"asphalt": [Color("#333737"), 24.0, 0.55, 0.0],
+		"rust": [Color("#91513a"), 10.0, 0.85, 0.2],
+		"rust_light": [Color("#b87350"), 16.0, 0.75, 0.14],
+		"concrete": [Color("#8f8876"), 15.0, 0.95, 0.0],
+		"concrete_dark": [Color("#585852"), 10.0, 0.85, 0.0],
+		"paint": [Color("#80948b"), 22.0, 0.6, 0.16]
+	}
+	for key in finish:
+		var config: Array = finish[key]
+		var patterned := ShaderMaterial.new()
+		patterned.shader = patina
+		patterned.set_shader_parameter("base_color", config[0])
+		patterned.set_shader_parameter("fleck_scale", config[1])
+		patterned.set_shader_parameter("weathering", config[2])
+		patterned.set_shader_parameter("metalness", config[3])
+		materials[key] = patterned
 
 func _box(parent: Node3D, pos: Vector3, size: Vector3, key: String, solid: bool = false, angle: float = 0.0) -> Node3D:
 	var holder := Node3D.new()
@@ -441,7 +460,7 @@ func _lighting() -> void:
 	sun.rotation_degrees = Vector3(-28, -48, 0)
 	sun.light_color = Color("#ffcb91")
 	sun.light_energy = 1.35
-	sun.shadow_enabled = false # Web/mobile profile: avoid large shadow maps initially.
+	sun.shadow_enabled = not DisplayServer.is_touchscreen_available() # Desktop depth, mobile fallback.
 	add_child(sun)
 	var neon := OmniLight3D.new()
 	neon.position = Vector3(-6, 4.5, -18)
