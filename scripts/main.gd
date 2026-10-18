@@ -10,6 +10,7 @@ var menu_camera: Camera3D
 var menu_ui: Control
 var hud_ui: Control
 var settings_ui: Control
+var about_ui: Control
 var resume_button: Button
 var toast: Label
 var position_text: Label
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_build_menu()
 	_build_hud()
 	_build_settings()
+	_build_about()
 	_update_menu()
 	_update_pointer()
 
@@ -217,8 +219,9 @@ func _update_pointer() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if settings_ui.visible:
+		if settings_ui.visible or about_ui.visible:
 			settings_ui.hide()
+			about_ui.hide()
 			menu_ui.show()
 		elif in_game:
 			if paused:
@@ -385,7 +388,30 @@ func _open_settings() -> void:
 	menu_ui.hide()
 	settings_ui.show()
 
+func _build_about() -> void:
+	about_ui = _ui_root(20)
+	about_ui.hide()
+	_rect(about_ui, Color("#0e1c1bf2"), 0, 0, 1, 1)
+	var layout := VBoxContainer.new()
+	layout.anchor_left = 0.15
+	layout.anchor_right = 0.85
+	layout.anchor_top = 0.12
+	layout.anchor_bottom = 0.88
+	layout.add_theme_constant_override("separation", 18)
+	about_ui.add_child(layout)
+	_text(layout, "STREFA ZERO // DOSSIER", 31, Color("#b9cd85"))
+	_text(layout, "ROK 2189 •  SEKTOR 07 •  PUSTKOWIE", 16, Color("#eedac0"))
+	var description := _text(layout,
+		"Po upadku starego świata pozostały skażone pustkowia, porzucone miasta i resztki dawnej technologii. Ten prototyp pozwala zwiedzić pierwszy fragment oryginalnego uniwersum STREFA ZERO.",
+		17, Color("#d2d3c2"))
+	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_text(layout, "WERSJA 0.1  /  PRE-ALPHA", 17, Color("#c9d790"))
+	_text(layout, "Godot 4.7.2 • Compatibility • WebGL 2", 14, Color("#9eb1a3"))
+	_button(layout, "POWRÓT", func() -> void:
+		about_ui.hide()
+		menu_ui.show()
+	)
+
 func _show_about() -> void:
 	menu_ui.hide()
-	settings_ui.show()
-	_notify("STREFA ZERO — AUTORSKI PROJEKT RPG 3D")
+	about_ui.show()
