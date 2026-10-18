@@ -1,27 +1,56 @@
-# ☢️ STREFA ZERO
+# ☢️ STREFA ZERO — RPG 3D (Web)
 
-**Nazwa robocza:** STREFA ZERO  
-**Gatunek:** fabularna gra RPG 3D w autorskim, postapokaliptycznym świecie  
-**Inspiracje:** Fallout 3, Fallout: New Vegas, Fallout 4  
-**Silnik planowany:** Godot 4 (GDScript), modele 3D Blender / GLB  
-**Status:** planowanie; **etap 1 aktywny** (nie ukończony)  
-**Platforma:** do potwierdzenia. Preferowany kierunek: PC / Windows, później ewentualnie przeglądarka i urządzenia mobilne.
+**Status:** etap 1 rozpoczęty, weryfikacja wydania 0.1 w toku.  
+**Silnik:** Godot 4.7.2 / GDScript / renderer Compatibility (WebGL 2).  
+**Platforma priorytetowa:** przeglądarka internetowa, również iPhone/Android po weryfikacji wydajności i dotyku.  
+**Docelowo:** autorskie RPG z otwartym światem, eksploracją, walką, NPC, dialogami, frakcjami i konsekwencjami decyzji.
 
-## Wizja
+## Zrealizowane w kodzie (nie oznacza jeszcze zaliczonego testu rozgrywki)
 
-Pełnoprawna gra RPG 3D z eksploracją otwartego świata, kamerą FPP/TPP, walką, ekwipunkiem, rozwojem postaci, frakcjami, NPC z zachowaniami, rozgałęzionymi dialogami, zadaniami i trwałymi konsekwencjami wyborów. Własne uniwersum, bez kopiowania chronionych elementów serii Fallout.
+- Działający szkielet projektu Godot i scena startowa.
+- Autorski pustynny krajobraz z ruinami, drogą, stacją paliw, autami, wieżą radiową, posterunkiem, daleką panoramą miasta i detalami środowiska.
+- Cinematic menu z widokiem na świat gry oraz HUD.
+- Sterowanie postacią FPP, sprint, kucanie, skok, rozglądanie myszą.
+- Wstępne sterowanie dotykowe i obrót kamery przeciągnięciem po ekranie.
+- Menu ustawień, zapisywanie pozycji i ustawień w `user://`.
+- GitHub Actions: import, kontrola błędów skryptów, eksport HTML5, artefakt do pobrania i próba wdrożenia GitHub Pages.
 
-## Plan rozwoju
+**Uwaga:** to pierwszy etap techniczno-wizualny; NIE jest to jeszcze pełna gra, system questów ani otwarty świat docelowej skali.
 
-➡️ **[ROADMAP.md — pełny plan 10 etapów, kryteria akceptacji i wersje 0.1–1.0](ROADMAP.md)**
+## Uruchomienie lokalnie
 
-### Stan projektu (18 października 2026)
+1. Zainstaluj [Godot 4.7.2](https://godotengine.org/download/archive/4.7.2-stable/) (wersja zwykła, bez .NET).
+2. Sklonuj repozytorium i otwórz plik `project.godot`.
+3. Kliknij **F6/F5** w edytorze Godot, aby uruchomić scenę lub cały projekt.
+4. Eksport do przeglądarki: zainstaluj szablony eksportu, wybierz preset `Web`, eksportuj do `build/web/index.html`. Uruchom go przez serwer HTTP, nie z pliku `file://`.
 
-- ✅ Opracowano koncepcję i plan.
-- 🟡 Etap 1 — fundament projektu — **aktywny, lecz implementacja jeszcze się nie rozpoczęła**.
-- ⬜ Etapy 2–10 — oczekujące.
-- 🧪 Brak potwierdzonych buildów oraz wyników testów.
+### Sterowanie
 
-### Zasada rozwoju
+| Klawisz / gest | Działanie |
+| --- | --- |
+| WASD / strzałki | Ruch |
+| Mysz | Rozglądanie |
+| Shift | Sprint |
+| Ctrl | Kucanie |
+| Spacja | Skok |
+| E | Skan otoczenia |
+| Esc | Menu/pauza |
+| Telefon: lewy panel | Przyciski ruchu |
+| Telefon: przeciągnięcie po prawej stronie | Rozglądanie |
 
-Każdy etap zamykamy dopiero po spełnieniu kryteriów odbioru i przygotowaniu działającego wydania. Nie oznaczamy etapu jako ukończonego na podstawie samego planu lub deklaracji.
+## Wersja web
+
+Próba eksportu web jest wykonywana automatycznie przez workflow [Build and deploy Godot Web](https://github.com/misza3444/fallout/actions/workflows/web.yml). Nawet jeśli Pages nie zostało jeszcze aktywowane, przygotowany plik gry może być dostępny jako artefakt workflow `strefa-zero-web`, o ile build przejdzie kontrolę błędów.
+
+Po udanym wdrożeniu GitHub Pages przewidywany adres to `https://misza3444.github.io/fallout/`. **Nie zakładamy, że adres już działa — zależy to od potwierdzonego wdrożenia.**
+
+## Dokumentacja
+
+- [ROADMAP.md](ROADMAP.md) — 10 etapów, kryteria odbioru, wersje 0.1–1.0.
+- [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) — decyzje o platformie i wymagania dotyczące jakości wizualnej.
+
+### Zasada jakości
+
+Od początku traktujemy oprawę 3D jako część produktu. Proste bryły nie stanowią zaakceptowanych docelowych modeli. Każda lokacja docelowo wymaga dopracowanego modelowania, materiałów, oświetlenia i charakteru. Jeżeli wymaga to większego nakładu pracy, trzeba poinformować użytkownika i uzyskać zgodę na dalszą pracę nad tym samym elementem.
+
+**Ważne:** ten prototyp wykorzystuje wciąż geometryczne modele autorskich obiektów; są wstępne, nie finalne. Brak jeszcze fotograficznej jakości AAA ani potwierdzonych pomiarów wydajności na iPhonie.
