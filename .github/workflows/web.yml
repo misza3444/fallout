@@ -34,11 +34,14 @@ jobs:
           use-dotnet: false
           include-templates: true
       - name: Import and parse project
-        run: godot --headless --path . --editor --quit
+        run: |
+          godot --headless --path . --editor --quit 2>&1 | tee /tmp/godot-import.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' /tmp/godot-import.log; then exit 1; fi
       - name: Build HTML5
         run: |
           mkdir -p build/web
-          godot --headless --path . --export-release "Web" build/web/index.html
+          godot --headless --path . --export-release "Web" build/web/index.html 2>&1 | tee /tmp/godot-export.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' /tmp/godot-export.log; then exit 1; fi
       - name: Publish build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -47,6 +50,8 @@ jobs:
           retention-days: 14
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
