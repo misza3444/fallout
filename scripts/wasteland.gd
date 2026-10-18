@@ -128,8 +128,8 @@ func _terrain() -> void:
 			var z := float(iz - 50) * 2.5
 			var points: Array[Vector3] = []
 			for offset in [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]:
-				var px := x + offset.x * 2.5
-				var pz := z + offset.y * 2.5
+				var px: float = x + float(offset.x) * 2.5
+				var pz: float = z + float(offset.y) * 2.5
 				var amount := noise.get_noise_2d(px, pz)
 				var h := amount * 0.45
 				if absf(px) < 27.0 and pz < 36.0 and pz > -62.0:
