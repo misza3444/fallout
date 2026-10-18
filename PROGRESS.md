@@ -7,8 +7,8 @@ Ostatnia aktualizacja: 2026-10-18. Projekt: https://github.com/misza3444/fallout
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** przeglądarka HTML5 / WebGL 2; sterowanie mobilne jako cel wymagający weryfikacji.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** commit `878135ba`, GitHub Actions run `39169993805` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
-- **Dalsze zmiany:** dodatkowy ekran informacji w menu, oczekuje na zakończenie nowego workflow.
+- **Ostatnia potwierdzona kompilacja:** commit `c23ba28`, GitHub Actions run `39170139386` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
+- **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** BLOKADA — GitHub Pages nie zostało włączone w repozytorium. Automatyczne tworzenie Pages przez token Actions odmówiło dostępu. Artefakt HTML5 dostępny w udanym workflow.
 
