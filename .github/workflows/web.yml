@@ -37,6 +37,10 @@ jobs:
         run: |
           godot --headless --path . --editor --quit 2>&1 | tee /tmp/godot-import.log
           if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' /tmp/godot-import.log; then exit 1; fi
+      - name: Smoke-run startup scene
+        run: |
+          godot --headless --path . --quit-after 60 2>&1 | tee /tmp/godot-runtime.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:|Invalid call' /tmp/godot-runtime.log; then exit 1; fi
       - name: Build HTML5
         run: |
           mkdir -p build/web
@@ -48,14 +52,26 @@ jobs:
           name: strefa-zero-web
           path: build/web/
           retention-days: 14
+      - name: Check GitHub Pages configuration
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Web build is available as an artifact; enable GitHub Pages (Source: GitHub Actions) under Settings > Pages for automatic deployment."
+          fi
       - name: Setup Pages
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - name: Upload Pages artifact
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web/
       - name: Deploy to Pages
+        if: steps.pages.outputs.enabled == 'true'
         id: deploy
         uses: actions/deploy-pages@v4
