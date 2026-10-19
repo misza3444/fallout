@@ -214,7 +214,10 @@ func _fuel_stop() -> void:
 	_box(stop, Vector3(0, 3.7, -7), Vector3(2.8, 0.6, 0.3), "paint", true)
 	_box(stop, Vector3(0, 4.15, -11), Vector3(14.5, 0.45, 9), "dark_metal")
 	_box(stop, Vector3(0, 4.6, -7.0), Vector3(14.5, 0.7, 0.7), "rust")
-	_box(stop, Vector3(0, 0.16, -7.0), Vector3(14, 0.28, 9.5), "concrete_light")
+	_box(stop, Vector3(0, 0.08, -7.0), Vector3(14, 0.16, 9.5), "concrete_light", true)
+	# A shallow approach lets the controller enter without a jump.
+	var approach := _box(stop, Vector3(0, -0.19, -1.28), Vector3(2.8, 0.12, 2.15), "concrete", true)
+	approach.rotation.x = 0.28
 	# Store front: mullions, doors, uneven boarded glass.
 	for x in [-6.2, -3.9, -1.4, 1.4, 3.9, 6.2]:
 		_box(stop, Vector3(x, 2.3, -6.9), Vector3(0.17, 3.3, 0.15), "dark_metal")
