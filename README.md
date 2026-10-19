@@ -13,7 +13,7 @@
 - Sterowanie postacią FPP, sprint, kucanie, skok, rozglądanie myszą.
 - Wstępne sterowanie dotykowe i obrót kamery przeciągnięciem po ekranie.
 - Menu ustawień, zapisywanie pozycji i ustawień w `user://`.
-- GitHub Actions: walidacja skryptów, test headless, eksport HTML5 do `public/`, zapis gotowych plików na gałęzi `main` i artefakt do pobrania.
+- GitHub Actions: walidacja skryptów, test headless, eksport HTML5 do `public/`, automatyczna publikacja na gałęzi `gh-pages` i artefakt do pobrania.
 
 **Uwaga:** to pierwszy etap techniczno-wizualny; NIE jest to jeszcze pełna gra, system questów ani otwarty świat docelowej skali.
 
@@ -38,27 +38,20 @@
 | Telefon: lewy panel | Przyciski ruchu |
 | Telefon: przeciągnięcie po prawej stronie | Rozglądanie |
 
-## Wersja web — Vercel (stan na 2026-10-19)
+## Gra online — GitHub Pages
 
-**Eksport HTML5 został wykonany i zweryfikowany w GitHub Actions.** Pliki `public/index.html`, `public/index.js`, `public/index.wasm`, `public/index.pck` oraz zasoby dodatkowe zostały zapisane w repozytorium przez workflow.
+**Aktualna droga publikacji: GitHub Pages**. Nie wymaga Vercel ani osobnego serwera. Gałąź [gh-pages](https://github.com/misza3444/fallout/tree/gh-pages) zawiera pliki gry HTML5 w katalogu głównym. Każda zmiana skryptów, scen lub shaderów na `main` powoduje automatyczne zbudowanie nowego eksportu Godot i aktualizację `gh-pages` przez [GitHub Actions](https://github.com/misza3444/fallout/actions/workflows/web.yml).
 
-- [Wynik poprawnego buildu](https://github.com/misza3444/fallout/actions/runs/39201649502)
-- [Gotowe pliki public/](public/)
-- [Konfiguracja Vercel](vercel.json)
-- [Workflow budowania i zapisu eksportu](.github/workflows/web.yml)
+### Jednorazowe włączenie strony
 
-**Adres Vercel jeszcze nie istnieje.** Automatyczna próba stworzenia projektu `strefa-zero` w zespole `michalkozlowski3444-gmailcoms-projects` nie powiodła się: integracja zwróciła `403 Forbidden` z informacją o braku autoryzacji dla tego scope. Nie oznaczamy publikacji jako gotowej.
+1. Otwórz [Settings → Pages](https://github.com/misza3444/fallout/settings/pages) w repozytorium.
+2. W **Build and deployment → Source** wybierz **Deploy from a branch**.
+3. W **Branch** ustaw `gh-pages`, katalog `/(root)`, a następnie kliknij **Save**.
+4. Poczekaj na publikację w [Actions](https://github.com/misza3444/fallout/actions). Po sukcesie sprawdź adres: **https://misza3444.github.io/fallout/**.
 
-### Jednorazowe podłączenie Vercel
+**Uwaga:** przed włączeniem Pages ten adres nie musi działać. Eksport headless (silnik, pliki, startup) to nie to samo co ręczny test gry w prawdziwej przeglądarce. Sterowanie dotykowe i wydajność na iPhonie wymagają sprawdzenia.
 
-1. Otwórz [Vercel — New Project](https://vercel.com/new).
-2. Wybierz własny zespół `michalkozlowski3444-gmailcoms-projects`.
-3. Zaimportuj repozytorium GitHub `misza3444/fallout` (jeśli go nie widzisz, nadaj Vercel dostęp do tego repozytorium w integracji GitHub).
-4. Wybierz nazwę projektu `strefa-zero`, gałąź produkcyjną `main`, Framework Preset: **Other**, Root Directory: **.** (root repozytorium).
-5. `vercel.json` deklaruje `framework: null` i `outputDirectory: "public"`. Nie jest wymagany proces kompilacji Godot w Vercel, ponieważ gotowy eksport jest już w `public/`.
-6. Kliknij **Deploy**. Dopiero po udanym wdrożeniu zweryfikuj adres projektu na Vercel w przeglądarce.
-
-Przy kolejnych zmianach kodu gry GitHub Actions przebudowuje `public/` i zapisuje gotową wersję na `main`. Po poprawnym połączeniu z repozytorium Vercel może wdrażać jego aktualne commity.
+Dla osób chcących hostować statyczny eksport inaczej (np. Netlify Drop) nadal można pobrać artefakt `strefa-zero-web` z uruchomienia GitHub Actions, rozpakować go i wgrać gotowe pliki na hosting. `vercel.json` pozostaje jako opcjonalna konfiguracja, ale Vercel nie jest wymagany.
 
 ## Dokumentacja
 
