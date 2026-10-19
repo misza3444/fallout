@@ -7,10 +7,16 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** przeglądarka HTML5 / WebGL 2; sterowanie mobilne jako cel wymagający weryfikacji.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** commit `8483f005`, GitHub Actions run `39201649502` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
+- **Ostatnia potwierdzona kompilacja:** commit `998176ca`, GitHub Actions run `39209924129` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** Gałąź `gh-pages` z kompletnym eksportem Godot HTML5 przygotowana i zasilana przez GitHub Actions. **Hosting wymaga jednorazowego włączenia Pages** w Settings → Pages (Deploy from a branch, `gh-pages`, `/(root)`). Adres nie jest jeszcze potwierdzony jako dostępny.
+
+## Stacja paliw — art pass v1 (2026-10-19)
+
+Zmiany w `scripts/wasteland.gd`: pusty w środku budynek z otwartymi drzwiami, lada i regały, podjazd oraz kolizja posadzki, przebudowane okna i deski z mocowaniami; segmentowe zadaszenie z uszkodzonym narożnikiem i odsłoniętymi belkami; numerowane dystrybutory, węże, kratki i oznaczenie NIECZYNNE; attyki, wentylacja, rynna, skrzynka elektryczna, zwisające przewody, skrzynie na palecie i złom. Oznaczenia BRAK PALIWA / EWAKUACJA / OSTATNI KONWOJ budują historię lokacji.
+
+Commit `998176ca`, GitHub Actions run `39209924129`: SUCCESS. Import, start headless, eksport HTML5 i publikacja na gh-pages zaliczone. Próba otwarcia przeglądarki zakończyła się timeoutem narzędzia; wygląd, przejście przez wejście i FPS nadal wymagają odbioru w grze. To iteracja proceduralnej scenografii, nie końcowe modele z UV i teksturami.
 
 ## UI scaling fix (2026-10-19)
 
