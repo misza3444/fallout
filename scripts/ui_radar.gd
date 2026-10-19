@@ -55,7 +55,7 @@ func _draw() -> void:
 	var endpoint := center + Vector2(cos(theta), sin(theta)) * radius
 	draw_line(center, endpoint, Color(accent.r, accent.g, accent.b, 0.33), 2.0, true)
 	for p in [Vector2(-0.53, -0.28), Vector2(0.21, 0.62), Vector2(0.52, -0.14)]:
-		var point := center + p * radius
+		var point: Vector2 = center + Vector2(p) * radius
 		draw_circle(point, 3.0, Color(accent.r, accent.g, accent.b, 0.55))
 		draw_arc(point, 7, 0, TAU, 18, edge_color, 1.0)
 
