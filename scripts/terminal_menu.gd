@@ -23,6 +23,7 @@ var home: Control
 var page_host: Control
 var pages: Dictionary = {}
 var resume_btn: Button
+var session_in_progress: bool = false
 var root_menu: VBoxContainer
 var current_screen: String = "home"
 var elapsed: float = 0.0
@@ -429,7 +430,7 @@ func show_page(name: String) -> void:
 
 func refresh_save() -> void:
 	if resume_btn != null:
-		resume_btn.disabled = not GameState.has_save and not get_parent().get_parent().get("in_game")
+		resume_btn.disabled = not GameState.has_save and not session_in_progress
 
 func _save_and_home() -> void:
 	GameState.store_settings()
