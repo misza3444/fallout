@@ -1,4 +1,4 @@
-name: Build Godot Web for Vercel
+name: Build and publish STREFA ZERO Web
 on:
   push:
     branches: [main]
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: godot-web-build
+  group: strefa-zero-web-build
   cancel-in-progress: false
 
 jobs:
@@ -25,25 +25,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Install Godot 4.7.2 with templates
+      - name: Install Godot 4.7.2 with export templates
         uses: chickensoft-games/setup-godot@v2.4.1
         with:
           version: 4.7.2
           use-dotnet: false
           include-templates: true
-      - name: Import and validate scripts
+      - name: Import and validate GDScript
         shell: bash
         run: |
           set -eo pipefail
           godot --headless --path . --editor --quit 2>&1 | tee /tmp/godot-import.log
           if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' /tmp/godot-import.log; then exit 1; fi
-      - name: Smoke-run startup scene
+      - name: Smoke-test game startup
         shell: bash
         run: |
           set -eo pipefail
           godot --headless --path . --quit-after 60 2>&1 | tee /tmp/godot-runtime.log
           if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:|Invalid call' /tmp/godot-runtime.log; then exit 1; fi
-      - name: Export optimized Web build
+      - name: Export HTML5
         shell: bash
         run: |
           set -eo pipefail
@@ -55,22 +55,29 @@ jobs:
           test -s public/index.wasm
           test -s public/index.pck
           du -h public/*
-      - name: Save downloadable build
+      - name: Upload downloadable Web build
         uses: actions/upload-artifact@v4
         with:
-          name: strefa-zero-vercel-static
+          name: strefa-zero-web
           path: public/
           retention-days: 14
-      - name: Commit deployable static assets to main
+      - name: Publish to gh-pages branch
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f public/
-          if git diff --cached --quiet; then
-            echo "No change in Web assets."
+          git fetch origin gh-pages
+          PAGES_DIR="$RUNNER_TEMP/strefa-pages"
+          git worktree add -B gh-pages "$PAGES_DIR" origin/gh-pages
+          find "$PAGES_DIR" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a public/. "$PAGES_DIR/"
+          touch "$PAGES_DIR/.nojekyll"
+          git -C "$PAGES_DIR" add -A
+          if git -C "$PAGES_DIR" diff --cached --quiet; then
+            echo "No web changes to publish."
           else
-            git commit -m "build(web): refresh Godot Vercel static output [skip ci]"
-            git push origin HEAD:main
+            git -C "$PAGES_DIR" commit -m "deploy(web): update STREFA ZERO [skip ci]"
+            git -C "$PAGES_DIR" push origin HEAD:gh-pages
           fi
+          echo "::notice::Static game built on gh-pages. To enable URL, set Pages Source to Deploy from a branch, Branch gh-pages, Folder /(root)."
