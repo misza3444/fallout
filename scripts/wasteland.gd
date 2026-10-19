@@ -203,27 +203,55 @@ func _fuel_stop() -> void:
 	stop.name = "The Ashen Mile — abandoned roadside service"
 	stop.position = Vector3(-17, 0.15, -22)
 	add_child(stop)
-	_box(stop, Vector3(0, 2.0, -11), Vector3(13, 4, 8), "concrete", true)
+	# Hollow shop shell and open central entrance.
+	_box(stop, Vector3(0, 0.08, -11), Vector3(13, 0.16, 8), "concrete_dark", true)
+	_box(stop, Vector3(0, 2, -14.85), Vector3(13, 4, 0.3), "concrete", true)
+	for x in [-6.35, 6.35]:
+		_box(stop, Vector3(x, 2, -11), Vector3(0.3, 4, 8), "concrete", true)
+	for x in [-3.9, 3.9]:
+		_box(stop, Vector3(x, 0.65, -7), Vector3(5, 1.1, 0.3), "concrete", true)
+		_box(stop, Vector3(x, 3.7, -7), Vector3(5, 0.6, 0.3), "paint", true)
+	_box(stop, Vector3(0, 3.7, -7), Vector3(2.8, 0.6, 0.3), "paint", true)
 	_box(stop, Vector3(0, 4.15, -11), Vector3(14.5, 0.45, 9), "dark_metal")
 	_box(stop, Vector3(0, 4.6, -7.0), Vector3(14.5, 0.7, 0.7), "rust")
 	_box(stop, Vector3(0, 0.16, -7.0), Vector3(14, 0.28, 9.5), "concrete_light")
 	# Store front: mullions, doors, uneven boarded glass.
-	for x in [-5.0, -3.5, 0.0, 2.3, 4.3]:
+	for x in [-6.2, -3.9, -1.4, 1.4, 3.9, 6.2]:
 		_box(stop, Vector3(x, 2.3, -6.9), Vector3(0.17, 3.3, 0.15), "dark_metal")
-	for x in [-4.25, -2.1, 1.05, 3.2]:
-		_box(stop, Vector3(x, 2.2, -6.97), Vector3(1.55, 2.95, 0.12), "glass")
+	for x in [-5.05, -2.65, 2.65, 5.05]:
+		_box(stop, Vector3(x, 2.3, -6.97), Vector3(2.22, 2.1, 0.12), "glass", true)
 	for x in [-3.0, 3.9]:
 		_box(stop, Vector3(x, 1.1, -6.74), Vector3(2.2, 0.23, 0.2), "rust_light", false, rng.randf_range(-0.15, 0.15))
-	_box(stop, Vector3(-0.4, 2.0, -6.64), Vector3(1.35, 3.7, 0.18), "rust", true)
-	_box(stop, Vector3(0.12, 2.3, -6.52), Vector3(0.08, 0.35, 0.16), "ivory")
+	var door := _box(stop, Vector3(1.15, 1.65, -7.8), Vector3(0.12, 3, 1.5), "rust", true, -0.18)
+	_box(door, Vector3(-0.08, 0.55, 0), Vector3(0.04, 1.3, 1), "glass2")
+	_box(door, Vector3(-0.16, 0, 0.5), Vector3(0.16, 0.32, 0.06), "metal")
+	_box(stop, Vector3(-3, 0.95, -10), Vector3(3.8, 1.6, 1), "paint", true)
+	_box(stop, Vector3(-3, 1.8, -10), Vector3(4, 0.1, 1.2), "ivory")
+	for y in [0.5, 1.3, 2.1]:
+		_box(stop, Vector3(3.5, y, -14.2), Vector3(3.8, 0.1, 0.8), "metal")
+	for x in [1.65, 5.35]:
+		_box(stop, Vector3(x, 1.3, -14.2), Vector3(0.08, 2.5, 0.8), "rust")
+	_label(stop, "OSTATNI KONWOJ / 04", Vector3(0, 2.5, -14.65), Color("#c7b99b"), 40)
 	# Shop sign framed with rust and neon.
 	_box(stop, Vector3(0, 5.25, -6.8), Vector3(12.3, 1.5, 0.42), "rust")
 	_box(stop, Vector3(0, 5.25, -6.54), Vector3(11.9, 1.12, 0.08), "dark_metal")
 	_label(stop, "ASHEN MILE  /  SERVICE", Vector3(0, 5.22, -6.39), Color("#d3d7b4"), 58)
 	_box(stop, Vector3(0, 4.55, -6.37), Vector3(11.1, 0.075, 0.08), "accent")
 	# A roof canopy with skinny weathered columns and inset lights.
-	_box(stop, Vector3(4, 5.1, 2.8), Vector3(17, 0.58, 11), "rust")
-	_box(stop, Vector3(4, 4.77, 2.8), Vector3(16.6, 0.12, 10.6), "ivory")
+	# Separate roof panels expose ribs at the torn front-right corner.
+	for i in range(6):
+		var x := -3.1 + i * 2.8
+		_box(stop, Vector3(x, 5.1, 1.4), Vector3(2.75, 0.22, 8.0), "rust")
+		if i < 5:
+			var panel := _box(stop, Vector3(x, 5.1, 6.8), Vector3(2.75, 0.22, 2.8), "paint")
+			if i == 4:
+				panel.rotation.z = -0.12
+	for z in [-2.5, 2.8, 8.1]:
+		_box(stop, Vector3(4, 4.83, z), Vector3(17, 0.24, 0.14), "dark_metal")
+	for x in [-4.4, 1.2, 6.8, 12.4]:
+		_box(stop, Vector3(x, 4.85, 2.8), Vector3(0.14, 0.25, 10.8), "metal")
+	_box(stop, Vector3(2.5, 5.13, 8.2), Vector3(14, 0.65, 0.16), "paint")
+	_label(stop, "ATOM / PALIWA - OLEJE", Vector3(2, 5.15, 8.3), Color("#d9ccab"), 48)
 	for x in [-3.0, 11.0]:
 		for z in [-1.3, 7.0]:
 			_cylinder(stop, Vector3(x, 2.48, z), 0.22, 4.85, "metal")
@@ -232,8 +260,11 @@ func _fuel_stop() -> void:
 		_box(stop, Vector3(x, 4.68, 3), Vector3(3.2, 0.09, 0.3), "warm_glow")
 	# Pumps: detailed body, hoses, dials and blockers.
 	for z in [-0.4, 5.1]:
-		_pump(stop, Vector3(3.2, 0.0, z))
-		_pump(stop, Vector3(6.7, 0.0, z))
+		_box(stop, Vector3(4.95, 0.1, z), Vector3(6, 0.2, 1.8), "concrete", true)
+		for x in [2.3, 7.6]:
+			_cylinder(stop, Vector3(x, 0.6, z + 0.65), 0.075, 1, "yellow")
+		_pump(stop, Vector3(3.2, 0.1, z), 1 if z < 0 else 3)
+		_pump(stop, Vector3(6.7, 0.1, z), 2 if z < 0 else 4)
 	# Neon sign tower visible from the road.
 	_rod(stop, Vector3(11.5, 0, 9), Vector3(11.5, 11.5, 9), 0.19, "rust")
 	_box(stop, Vector3(11.5, 10.0, 9), Vector3(7.6, 3.6, 0.5), "rust")
@@ -249,16 +280,72 @@ func _fuel_stop() -> void:
 		if rng.randf() > 0.42:
 			_rock(stop.to_global(Vector3(px, 0, pz)), rng.randf_range(0.25, 0.7), "concrete")
 	_rod(stop, Vector3(-5, 4.4, -10), Vector3(-5, 3, -14), 0.08, "rust_light")
+	_station_details(stop)
 
-func _pump(parent: Node3D, p: Vector3) -> void:
+func _pump(parent: Node3D, p: Vector3, number: int = 1) -> void:
 	_box(parent, p + Vector3(0, 0.15, 0), Vector3(1.2, 0.25, 1.25), "concrete_dark")
-	_box(parent, p + Vector3(0, 1.13, 0), Vector3(0.8, 1.75, 0.65), "rust_light")
+	_box(parent, p + Vector3(0, 1.13, 0), Vector3(0.8, 1.75, 0.65), "rust" if number == 4 else "paint", true)
 	_box(parent, p + Vector3(0, 2.08, 0), Vector3(0.92, 0.24, 0.78), "ivory")
 	_box(parent, p + Vector3(0, 1.63, 0.35), Vector3(0.54, 0.43, 0.09), "glass")
-	_label(parent, "00.0", p + Vector3(0, 1.61, 0.42), Color("#a4ca9b"), 24)
-	_rod(parent, p + Vector3(0.42, 1.7, 0), p + Vector3(0.8, 0.9, 0.16), 0.055, "black")
-	_rod(parent, p + Vector3(0.8, 0.9, 0.16), p + Vector3(0.53, 0.38, 0.1), 0.05, "black")
-	_box(parent, p + Vector3(0.56, 0.55, 0.1), Vector3(0.25, 0.3, 0.19), "dark_metal")
+	_label(parent, "87.4" if number == 2 else "00.0", p + Vector3(0, 1.61, 0.42), Color("#c7b99b"), 24)
+	_label(parent, "%02d" % number, p + Vector3(0, 2.08, 0.42), Color("#743f30"), 25)
+	for i in range(5):
+		_box(parent, p + Vector3(0, 0.6 + i * 0.09, 0.34), Vector3(0.45, 0.025, 0.025), "black")
+	_station_cable(parent, p + Vector3(0.42, 1.8, 0), p + Vector3(0.75, 1.25, 0.2), 1.0)
+	_rod(parent, p + Vector3(0.75, 1.25, 0.2), p + Vector3(0.82, 1.52, 0.2), 0.055, "metal")
+	_box(parent, p + Vector3(0.75, 1.16, 0.2), Vector3(0.12, 0.25, 0.16), "dark_metal")
+	if number == 4:
+		var tag := _label(parent, "NIECZYNNE", p + Vector3(0, 1.62, 0.47), Color("#e1a272"), 20)
+		tag.rotation.z = -0.18
+
+func _station_cable(parent: Node3D, a: Vector3, b: Vector3, sag: float) -> void:
+	var previous := a
+	for i in range(1, 9):
+		var t := float(i) / 8.0
+		var point := a.lerp(b, t) + Vector3.DOWN * sin(t * PI) * sag
+		_rod(parent, previous, point, 0.028, "black")
+		previous = point
+
+func _station_details(stop: Node3D) -> void:
+	# Roof silhouette: parapets, air conditioner, exhaust and patched downpipe.
+	for x in [-6.7, 6.7]:
+		_box(stop, Vector3(x, 4.6, -11), Vector3(0.18, 0.65, 8.7), "concrete")
+	_box(stop, Vector3(-3.8, 4.9, -12), Vector3(2.2, 1, 1.7), "metal")
+	for i in range(7):
+		_box(stop, Vector3(-3.8, 4.55 + i * 0.1, -11.13), Vector3(1.8, 0.035, 0.04), "black")
+	_cylinder(stop, Vector3(3.8, 5, -13), 0.27, 1.3, "rust")
+	_cylinder(stop, Vector3(3.8, 5.68, -13), 0.48, 0.12, "dark_metal")
+	_rod(stop, Vector3(-6.65, 4.3, -7), Vector3(-6.65, 0.55, -7), 0.09, "rust")
+	_rod(stop, Vector3(-6.65, 0.55, -7), Vector3(-6.9, 0.35, -6.5), 0.09, "rust")
+	# Boards, nails and a hand-painted warning describe the shop's last use.
+	for i in range(4):
+		var board := _box(stop, Vector3(-4.2, 1.6 + i * 0.4, -6.65), Vector3(3.6, 0.18, 0.12), "car_cream")
+		board.rotation.z = -0.13 + i * 0.07
+		for x in [-1.4, 1.4]:
+			_box(board, Vector3(x, 0, 0.07), Vector3(0.04, 0.04, 0.03), "dark_metal")
+	_label(stop, "BRAK PALIWA", Vector3(3.9, 2.4, -6.74), Color("#d9b18b"), 40)
+	_box(stop, Vector3(11.5, 6.7, 9), Vector3(3.8, 1.2, 0.16), "ivory")
+	_label(stop, "EWAKUACJA >", Vector3(11.5, 6.7, 9.1), Color("#743c2c"), 36)
+	# Electrical cabinet and slack cable to the canopy.
+	_box(stop, Vector3(5.8, 2, -6.65), Vector3(0.65, 0.9, 0.3), "metal")
+	_label(stop, "!", Vector3(5.8, 2, -6.47), Color("#d3b969"), 38)
+	_rod(stop, Vector3(5.8, 2.5, -6.65), Vector3(5.8, 3.9, -6.65), 0.035, "black")
+	_station_cable(stop, Vector3(5.8, 3.9, -6.65), Vector3(11, 4.7, -1.3), 0.65)
+	_station_cable(stop, Vector3(10, 4.8, 7.9), Vector3(12.3, 3.1, 6), 0.65)
+	# Crates on a pallet: a supply cache rather than random scatter.
+	for i in range(6):
+		_box(stop, Vector3(-5.2, 0.13, -0.8 + i * 0.2), Vector3(2, 0.12, 0.14), "car_cream")
+	for p in [Vector3(-5.7, 0.6, -0.4), Vector3(-4.7, 0.6, -0.4), Vector3(-5.6, 1.4, -0.4)]:
+		_box(stop, p, Vector3(0.8, 0.75, 0.8), "car_cream", true)
+		for dx in [-0.3, 0.3]:
+			_box(stop, p + Vector3(dx, 0, 0.42), Vector3(0.075, 0.8, 0.04), "dark_metal")
+	var sheet := _box(stop, Vector3(9.6, 0.4, -4.5), Vector3(2.3, 0.06, 1.5), "rust", false, 0.4)
+	sheet.rotation.z = 0.2
+	_cylinder(stop, Vector3(9.1, 0.18, -3.4), 0.55, 0.32, "black")
+	_cylinder(stop, Vector3(9.1, 0.35, -3.4), 0.25, 0.025, "rust")
+	# Keep these marks on the facade, away from the open entrance.
+	for x in [-5.8, -4.3, -2.1, 2.1, 3.2, 5.2]:
+		_box(stop, Vector3(x, 0.63, -6.83), Vector3(0.08, 0.7, 0.015), "concrete_dark")
 
 func _outpost() -> void:
 	var outpost := Node3D.new()
@@ -469,3 +556,4 @@ func _lighting() -> void:
 	neon.omni_range = 8
 	neon.shadow_enabled = false
 	add_child(neon)
+
