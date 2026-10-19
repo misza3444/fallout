@@ -21,6 +21,8 @@ const DIM := Color("#81967a")
 var shell: Control
 var home: Control
 var page_host: Control
+var home_scroll: ScrollContainer
+var page_scroll: ScrollContainer
 var pages: Dictionary = {}
 var resume_btn: Button
 var session_in_progress: bool = false
@@ -54,145 +56,184 @@ func _on_viewport_changed() -> void:
 	_rebuild()
 
 func _rebuild() -> void:
+	# Recompute the actual available vertical space instead of relying on width
+	# alone. Both the main menu and subpages can scroll on short displays.
 	for node in get_children():
 		if node != ui_player:
 			node.queue_free()
 	pages.clear()
 	var bounds: Vector2 = get_viewport_rect().size
-	var compact: bool = bounds.x < 850.0 or bounds.y < 590.0
-	var very_compact: bool = bounds.y < 570.0
+	var short_height: bool = bounds.y < 520.0
+	var tight_height: bool = bounds.y < 760.0
+	var narrow: bool = bounds.x < 660.0
+	var compact: bool = tight_height or bounds.x < 1080.0
+	var show_radar: bool = bounds.x >= 1100.0 and bounds.y >= 620.0
+	var panel_ratio: float = 0.66 if show_radar else minf(1.0, 820.0 / maxf(bounds.x, 1.0))
+	if not show_radar and bounds.x > 970.0:
+		panel_ratio = maxf(panel_ratio, 0.72)
+	if not show_radar and bounds.x < 900.0:
+		panel_ratio = 1.0
+	var top_height: int = 34 if short_height else 44
+	var footer_height: int = 30 if short_height else 36
+	var spacing: int = 4 if short_height else (7 if tight_height else 10)
+
 	shell = Control.new()
 	shell.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shell.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(shell)
-	# A translucent glass/metal panel leaves the cinematic wasteland clearly visible.
+
 	var backing := ColorRect.new()
-	backing.color = Color("#06110ce9") if compact else Color("#07110de8")
-	backing.anchor_right = 1.0 if compact else 0.60
+	backing.color = Color("#06110cf2") if narrow else Color("#07110de8")
+	backing.anchor_right = panel_ratio
 	backing.anchor_bottom = 1.0
 	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(backing)
 	var rim := ColorRect.new()
 	rim.color = accent
-	rim.anchor_left = 1.0 if compact else 0.60
-	rim.anchor_right = rim.anchor_left
+	rim.anchor_left = panel_ratio
+	rim.anchor_right = panel_ratio
 	rim.anchor_bottom = 1.0
 	rim.offset_left = -2
-	rim.offset_right = 0
 	rim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(rim)
 
 	var top := ColorRect.new()
 	top.color = Color("#192d20")
-	top.anchor_right = 1
-	top.offset_bottom = 38 if compact else 45
+	top.anchor_right = 1.0
+	top.offset_bottom = top_height
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(top)
 	var top_inner := HBoxContainer.new()
-	top_inner.anchor_right = 1
-	top_inner.offset_left = 21
-	top_inner.offset_right = -22
-	top_inner.offset_top = 8
-	top_inner.offset_bottom = 35
+	top_inner.anchor_right = 1.0
+	top_inner.offset_left = 16 if narrow else 24
+	top_inner.offset_right = -16
+	top_inner.offset_top = 7
+	top_inner.offset_bottom = top_height - 6
 	top_inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(top_inner)
-	_label(top_inner, "◈  SZ-OS / TERMINAL DOSTĘPU", 13 if compact else 15, accent)
+	_label(top_inner, "SZ-OS / TERMINAL" if narrow else "◈  SZ-OS / TERMINAL DOSTĘPU", 12 if compact else 15, accent)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_inner.add_child(spacer)
-	clock_label = _label(top_inner, "2189 // 07", 12, DIM)
+	clock_label = _label(top_inner, "2189 // 07", 11 if compact else 12, DIM)
+	clock_label.visible = bounds.x >= 600.0
 
 	var floor_bar := ColorRect.new()
-	floor_bar.color = Color("#14271cd9")
-	floor_bar.anchor_top = 1
-	floor_bar.anchor_bottom = 1
-	floor_bar.anchor_right = 1
-	floor_bar.offset_top = -35
+	floor_bar.color = Color("#14271cef")
+	floor_bar.anchor_top = 1.0
+	floor_bar.anchor_bottom = 1.0
+	floor_bar.anchor_right = 1.0
+	floor_bar.offset_top = -footer_height
 	floor_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(floor_bar)
 	var footer := HBoxContainer.new()
-	footer.anchor_top = 1
-	footer.anchor_bottom = 1
-	footer.anchor_right = 1
-	footer.offset_top = -30
+	footer.anchor_top = 1.0
+	footer.anchor_bottom = 1.0
+	footer.anchor_right = 1.0
+	footer.offset_top = -footer_height + 5
 	footer.offset_bottom = -5
-	footer.offset_left = 20
-	footer.offset_right = -20
+	footer.offset_left = 16 if narrow else 24
+	footer.offset_right = -16
 	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shell.add_child(footer)
-	status = _label(footer, "SYS: GOTOWOŚĆ  |  KANAŁ 07", 11, accent)
+	status = _label(footer, "SYS: GOTOWOŚĆ  |  KANAŁ 07", 10 if narrow else 11, accent)
 	var fs := Control.new()
 	fs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fs.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	footer.add_child(fs)
-	_label(footer, "V 0.1 // PRE-ALPHA", 11, DIM)
+	var version := _label(footer, "V 0.1 // PRE-ALPHA", 10 if compact else 11, DIM)
+	version.visible = bounds.x >= 590.0
 
+	# The fixed header and footer are outside the scrolling content.
+	# ScrollContainer ensures every button remains reachable at 844x390,
+	# 1024x600, 1366x768 and phone portrait resolutions.
 	var main_margin := MarginContainer.new()
-	main_margin.anchor_right = 1.0 if compact else 0.60
-	main_margin.anchor_bottom = 1
-	main_margin.offset_top = 45
-	main_margin.offset_bottom = -40
-	main_margin.add_theme_constant_override("margin_left", 20 if compact else 54)
-	main_margin.add_theme_constant_override("margin_right", 18 if compact else 42)
-	main_margin.add_theme_constant_override("margin_top", 12 if compact else 42)
-	main_margin.add_theme_constant_override("margin_bottom", 5)
+	main_margin.anchor_right = panel_ratio
+	main_margin.anchor_bottom = 1.0
+	main_margin.offset_top = top_height + 3
+	main_margin.offset_bottom = -footer_height - 3
+	main_margin.add_theme_constant_override("margin_left", 17 if narrow else (30 if compact else 50))
+	main_margin.add_theme_constant_override("margin_right", 17 if narrow else (28 if compact else 40))
+	main_margin.add_theme_constant_override("margin_top", 9 if tight_height else 18)
+	main_margin.add_theme_constant_override("margin_bottom", 8)
 	shell.add_child(main_margin)
 	var stack := VBoxContainer.new()
-	stack.add_theme_constant_override("separation", 8 if compact else 12)
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stack.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	stack.add_theme_constant_override("separation", 0)
 	main_margin.add_child(stack)
-	home = VBoxContainer.new()
-	home.add_theme_constant_override("separation", 7 if compact else 11)
-	home.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stack.add_child(home)
 
-	_label(home, "S Y S T E M   / /   2 1 8 9", 12, AMBER)
-	var brand := _label(home, "STREFA", 45 if compact else 71, CREAM)
-	brand.add_theme_constant_override("line_spacing", -8)
-	var brand_two := _label(home, "ZERO", 56 if compact else 89, accent)
-	brand_two.add_theme_constant_override("line_spacing", -8)
-	_label(home, "ARCHIWUM OCALAŁYCH  //  SEKTOR 07", 12 if compact else 14, DIM)
+	home_scroll = ScrollContainer.new()
+	home_scroll.name = "HomeScroll"
+	home_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	home_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	home_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	home_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	home_scroll.follow_focus = true
+	stack.add_child(home_scroll)
+	home = VBoxContainer.new()
+	home.name = "HomeContent"
+	home.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	home.add_theme_constant_override("separation", spacing)
+	home_scroll.add_child(home)
+
+	_label(home, "S Y S T E M   / /   2 1 8 9", 11 if compact else 12, AMBER)
+	var title_size: int = 42 if narrow else (49 if tight_height else 70)
+	var zero_size: int = 50 if narrow else (58 if tight_height else 88)
+	_label(home, "STREFA", title_size, CREAM)
+	_label(home, "ZERO", zero_size, accent)
+	_label(home, "ARCHIWUM OCALAŁYCH  //  SEKTOR 07", 11 if compact else 13, DIM)
 	_divider(home)
 	var menu_space := Control.new()
-	menu_space.custom_minimum_size.y = 2 if compact else 23
+	menu_space.custom_minimum_size.y = 2 if tight_height else 12
 	home.add_child(menu_space)
+
 	root_menu = VBoxContainer.new()
-	root_menu.add_theme_constant_override("separation", 4 if very_compact else 8)
-	root_menu.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root_menu.add_theme_constant_override("separation", 5 if tight_height else 8)
 	home.add_child(root_menu)
-	resume_btn = _button(root_menu, "01  /  KONTYNUUJ", continue_requested.emit, very_compact)
-	_button(root_menu, "02  /  NOWA WYPRAWA", new_game_requested.emit, very_compact)
-	_button(root_menu, "03  /  USTAWIENIA", func() -> void: show_page("settings"), very_compact)
-	_button(root_menu, "04  /  ARCHIWUM ŚWIATA", func() -> void: show_page("archive"), very_compact)
-	_button(root_menu, "05  /  O PROJEKCIE", func() -> void: show_page("about"), very_compact)
-	_button(root_menu, "06  /  WYJŚCIE", func() -> void: show_page("exit"), very_compact)
-	if not very_compact:
-		var info := _label(home, "◉ TRANSMISJA W TOKU       ▮▮▯▯  ODBIÓR: NISKI", 12, DIM)
-		info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	home.visible = current_screen == "home"
+	resume_btn = _button(root_menu, "01  /  KONTYNUUJ", continue_requested.emit, compact)
+	_button(root_menu, "02  /  NOWA WYPRAWA", new_game_requested.emit, compact)
+	_button(root_menu, "03  /  USTAWIENIA", func() -> void: show_page("settings"), compact)
+	_button(root_menu, "04  /  ARCHIWUM ŚWIATA", func() -> void: show_page("archive"), compact)
+	_button(root_menu, "05  /  O PROJEKCIE", func() -> void: show_page("about"), compact)
+	_button(root_menu, "06  /  WYJŚCIE", func() -> void: show_page("exit"), compact)
+	if not tight_height and bounds.x >= 650.0:
+		_label(home, "◉ TRANSMISJA W TOKU  /  ODBIÓR: NISKI", 11, DIM)
+	home_scroll.visible = current_screen == "home"
 
+	page_scroll = ScrollContainer.new()
+	page_scroll.name = "PagesScroll"
+	page_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	page_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	page_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	page_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	page_scroll.follow_focus = true
+	stack.add_child(page_scroll)
 	page_host = VBoxContainer.new()
-	page_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	page_host.add_theme_constant_override("separation", 10)
-	stack.add_child(page_host)
-	page_host.visible = current_screen != "home"
-	_build_pages(very_compact)
+	page_host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	page_host.add_theme_constant_override("separation", 8 if compact else 11)
+	page_scroll.add_child(page_host)
+	_build_pages(compact)
+	page_scroll.visible = current_screen != "home"
 
-	if not compact:
+	# This is a smaller supplementary instrument, not a second fullscreen
+	# panel; hide it entirely on narrow or low landscape viewports.
+	if show_radar:
 		var side := Control.new()
-		side.anchor_left = 0.60
+		side.anchor_left = panel_ratio
 		side.anchor_right = 1.0
 		side.anchor_bottom = 1.0
-		side.offset_top = 45
-		side.offset_bottom = -35
+		side.offset_top = top_height
+		side.offset_bottom = -footer_height
 		side.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		shell.add_child(side)
 		var side_screen := PanelContainer.new()
-		side_screen.anchor_left = 0.05
-		side_screen.anchor_right = 0.95
-		side_screen.anchor_top = 0.10
-		side_screen.anchor_bottom = 0.91
-		side_screen.add_theme_stylebox_override("panel", _style(Color("#06110cc2"), EDGE, 2))
+		side_screen.anchor_left = 0.10
+		side_screen.anchor_right = 0.90
+		side_screen.anchor_top = 0.20
+		side_screen.anchor_bottom = 0.75
+		side_screen.add_theme_stylebox_override("panel", _style(Color("#06110cc7"), EDGE, 2))
 		side.add_child(side_screen)
 		radar = RADAR.new()
 		radar.name = "SignalCartography"
@@ -201,14 +242,14 @@ func _rebuild() -> void:
 		radar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		side_screen.add_child(radar)
 		radar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		var side_title := _label(side, "T A K T Y C Z N A  /  M A P A", 14, GREEN)
-		side_title.anchor_left = 0.11
+		var side_title := _label(side, "TAKTYCZNA / MAPA", 13, accent)
+		side_title.anchor_left = 0.12
+		side_title.anchor_right = 0.95
 		side_title.anchor_top = 0.14
-		side_title.anchor_right = 0.96
-		var side_desc := _label(side, "S Y G N A Ł   :   N I E S T A B I L N Y", 12, AMBER)
-		side_desc.anchor_left = 0.11
-		side_desc.anchor_top = 0.80
-		side_desc.anchor_right = 0.96
+		var side_desc := _label(side, "SYGNAŁ: NIESTABILNY", 12, AMBER)
+		side_desc.anchor_left = 0.12
+		side_desc.anchor_right = 0.95
+		side_desc.anchor_top = 0.79
 
 	crt_overlay = ColorRect.new()
 	crt_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -219,7 +260,7 @@ func _rebuild() -> void:
 	shader.set_shader_parameter("strength", 0.0 if reduce_motion else 0.47)
 	crt_overlay.material = shader
 	shell.add_child(crt_overlay)
-	# The boot overlay is a one-time narrative flourish; rebuilding on resize skips it.
+
 	if not boot_finished:
 		boot_layer = ColorRect.new()
 		boot_layer.color = DARK
@@ -230,7 +271,7 @@ func _rebuild() -> void:
 		center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		boot_layer.add_child(center)
-		boot_label = _label(center, "INICJALIZACJA SYSTEMU...", 20, accent)
+		boot_label = _label(center, "INICJALIZACJA SYSTEMU...", 20 if not compact else 15, accent)
 	else:
 		boot_layer = null
 	refresh_save()
@@ -258,18 +299,21 @@ func _label(parent: Node, content: String, font_size: int, color: Color) -> Labe
 
 func _divider(parent: Node) -> void:
 	var line := HSeparator.new()
-	line.add_theme_stylebox_override("separator", _style(Color("#74844a"), Color("#74844a"), 0))
-	line.custom_minimum_size.y = 2
+	var line_style := StyleBoxLine.new()
+	line_style.color = EDGE
+	line_style.thickness = 1
+	line.add_theme_stylebox_override("separator", line_style)
+	line.custom_minimum_size.y = 1
 	parent.add_child(line)
 
 func _button(parent: Node, content: String, action: Callable, small: bool = false) -> Button:
 	var btn := Button.new()
 	btn.text = content
 	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	btn.custom_minimum_size = Vector2(0, 34 if small else 49)
+	btn.custom_minimum_size = Vector2(0, 42 if small else 48)
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.focus_mode = Control.FOCUS_ALL
-	btn.add_theme_font_size_override("font_size", 14 if small else 17)
+	btn.add_theme_font_size_override("font_size", 14 if small else 16)
 	btn.add_theme_color_override("font_color", CREAM)
 	btn.add_theme_color_override("font_hover_color", accent)
 	btn.add_theme_color_override("font_pressed_color", DARK)
@@ -294,7 +338,8 @@ func _section(name: String, tag: String, compact: bool) -> VBoxContainer:
 	page_host.add_child(panel)
 	pages[name] = panel
 	_label(panel, "◈  " + tag, 12, AMBER)
-	_label(panel, name.to_upper(), 31 if compact else 42, accent)
+	var translated := {"settings": "USTAWIENIA", "archive": "ARCHIWUM", "about": "O PROJEKCIE", "exit": "WYJŚCIE"}
+	_label(panel, str(translated.get(name, name.to_upper())), 28 if compact else 40, accent)
 	_divider(panel)
 	return panel
 
@@ -349,14 +394,10 @@ func _build_pages(compact: bool) -> void:
 	_button(settings, "◀  POWRÓT", show_home, compact)
 
 	var archive := _section("archive", "ARCHIVE / ODZYSKANE DANE", compact)
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	archive.add_child(scroll)
 	var records := VBoxContainer.new()
 	records.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	records.add_theme_constant_override("separation", 13)
-	scroll.add_child(records)
+	records.add_theme_constant_override("separation", 10)
+	archive.add_child(records)
 	for entry in [
 		["REJESTR 001  /  DZIEŃ ZEROWY", "Rok 2086. Systemy obronne przestały odpowiadać. Ziemia po raz pierwszy zamilkła. Kolejne pokolenia zapamiętały już tylko pustkowia."],
 		["REJESTR 007  /  KORYTARZ POŁUDNIOWY", "Na starej trasie paliwowej działał punkt ASHEN MILE. Dziś stacja nadaje słaby sygnał, lecz nie ma śladów aktualnej obsługi."],
@@ -422,8 +463,12 @@ func show_page(name: String) -> void:
 	if name != "home" and not pages.has(name):
 		return
 	current_screen = name
-	home.visible = name == "home"
-	page_host.visible = name != "home"
+	home_scroll.visible = name == "home"
+	page_scroll.visible = name != "home"
+	if name == "home":
+		home_scroll.scroll_vertical = 0
+	else:
+		page_scroll.scroll_vertical = 0
 	for key in pages:
 		(pages[key] as Control).visible = key == name
 	_play_sound(550, 0.045, 0.15)
