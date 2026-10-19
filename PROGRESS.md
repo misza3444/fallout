@@ -7,10 +7,20 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** przeglądarka HTML5 / WebGL 2; sterowanie mobilne jako cel wymagający weryfikacji.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** commit `998176ca`, GitHub Actions run `39209924129` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
+- **Ostatnia potwierdzona kompilacja:** commit `4e70a0d2`, GitHub Actions run `39242202575` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
-- **Publikacja pod publicznym adresem:** Gałąź `gh-pages` z kompletnym eksportem Godot HTML5 przygotowana i zasilana przez GitHub Actions. **Hosting wymaga jednorazowego włączenia Pages** w Settings → Pages (Deploy from a branch, `gh-pages`, `/(root)`). Adres nie jest jeszcze potwierdzony jako dostępny.
+- **Publikacja pod publicznym adresem:** https://misza3444.github.io/fallout/ odpowiada HTTP 200. Eksport jest automatycznie zapisywany na `gh-pages`, następnie publikowany przez GitHub Pages. Sam kod HTTP nie potwierdza wyglądu ani grywalności.
+
+## Modele i materiały stacji — asset pass v1 (2026-10-19)
+
+Commit `4e70a0d2`, GitHub Actions run `39242202575`: SUCCESS — import, start headless, eksport HTML5 i zapis na `gh-pages`.
+
+- Cztery dystrybutory zastąpione modelem GLB z zaokrągloną obudową, licznikiem i wężem.
+- Jeden wrak zastąpiony modelem GLB z nadkolami, otworami okiennymi i podniesioną maską.
+- Asfalt, beton i rdza używają lokalnych tekstur PBR Poly Haven (CC0), 1024 px.
+- Edytowalne źródła Blendera w `art_source/`, generator w `tools/build_station_assets.py`, źródła/licencje w `assets/ASSET_SOURCES.md`.
+- Wygląd w grze, kolizje i wydajność na telefonie nadal wymagają odbioru. Pozostałe auta pozostają proceduralne.
 
 ## Stacja paliw — art pass v1 (2026-10-19)
 
