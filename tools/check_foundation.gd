@@ -68,7 +68,8 @@ func _run() -> void:
 	game.player.velocity = Vector3(2, 4, 1)
 	game._new_game()
 	_expect(game.player.velocity == Vector3.ZERO, "New game retained velocity")
-	game.free()
+	game.queue_free()
+	await process_frame
 
 	for path in originals:
 		if originals[path] == null:

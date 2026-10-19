@@ -41,13 +41,16 @@ func read_position() -> Dictionary:
 	var config := ConfigFile.new()
 	if config.load(SAVE_PATH) != OK:
 		return {}
-	var p: Variant = config.get_value("player", "position", null)
+	for key in ["position", "yaw", "pitch"]:
+		if not config.has_section_key("player", key):
+			return {}
+	var p: Variant = config.get_value("player", "position")
 	if not p is Vector3:
 		return {}
 	if not _valid_position(p):
 		return {}
-	var yaw: Variant = config.get_value("player", "yaw", null)
-	var pitch: Variant = config.get_value("player", "pitch", null)
+	var yaw: Variant = config.get_value("player", "yaw")
+	var pitch: Variant = config.get_value("player", "pitch")
 	if not (yaw is float or yaw is int) or not (pitch is float or pitch is int):
 		return {}
 	if not is_finite(float(yaw)) or not is_finite(float(pitch)):
