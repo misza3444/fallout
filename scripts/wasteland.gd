@@ -1,8 +1,10 @@
 extends Node3D
 ## Hand-built procedural environment: geometry, props, composition and art direction.
-## Browser-first: no external downloads, runtime image generation or heavy postprocessing.
+## Browser-first: bundled GLB assets/PBR maps; no runtime external downloads.
 
 const SEED := 2189
+const PUMP_ASSET: PackedScene = preload("res://assets/models/ashen_pump.glb")
+const WRECK_ASSET: PackedScene = preload("res://assets/models/ashen_coupe_wreck.glb")
 var rng := RandomNumberGenerator.new()
 var materials: Dictionary = {}
 var dust: StandardMaterial3D
@@ -78,6 +80,11 @@ func _materials() -> void:
 		patterned.set_shader_parameter("weathering", config[2])
 		patterned.set_shader_parameter("metalness", config[3])
 		materials[key] = patterned
+	# Bundled CC0 PBR textures, shared by all matching surfaces.
+	materials["asphalt"] = preload("res://assets/materials/asphalt.tres")
+	materials["concrete"] = preload("res://assets/materials/concrete.tres")
+	materials["concrete_light"] = materials["concrete"]
+	materials["rust"] = preload("res://assets/materials/rust.tres")
 
 func _box(parent: Node3D, pos: Vector3, size: Vector3, key: String, solid: bool = false, angle: float = 0.0) -> Node3D:
 	var holder := Node3D.new()
@@ -286,20 +293,33 @@ func _fuel_stop() -> void:
 	_station_details(stop)
 
 func _pump(parent: Node3D, p: Vector3, number: int = 1) -> void:
-	_box(parent, p + Vector3(0, 0.15, 0), Vector3(1.2, 0.25, 1.25), "concrete_dark")
-	_box(parent, p + Vector3(0, 1.13, 0), Vector3(0.8, 1.75, 0.65), "rust" if number == 4 else "paint", true)
-	_box(parent, p + Vector3(0, 2.08, 0), Vector3(0.92, 0.24, 0.78), "ivory")
-	_box(parent, p + Vector3(0, 1.63, 0.35), Vector3(0.54, 0.43, 0.09), "glass")
-	_label(parent, "87.4" if number == 2 else "00.0", p + Vector3(0, 1.61, 0.42), Color("#c7b99b"), 24)
-	_label(parent, "%02d" % number, p + Vector3(0, 2.08, 0.42), Color("#743f30"), 25)
-	for i in range(5):
-		_box(parent, p + Vector3(0, 0.6 + i * 0.09, 0.34), Vector3(0.45, 0.025, 0.025), "black")
-	_station_cable(parent, p + Vector3(0.42, 1.8, 0), p + Vector3(0.75, 1.25, 0.2), 1.0)
-	_rod(parent, p + Vector3(0.75, 1.25, 0.2), p + Vector3(0.82, 1.52, 0.2), 0.055, "metal")
-	_box(parent, p + Vector3(0.75, 1.16, 0.2), Vector3(0.12, 0.25, 0.16), "dark_metal")
+	var pump := PUMP_ASSET.instantiate() as Node3D
+	pump.name = "Enamel pump %02d" % number
+	pump.position = p
+	parent.add_child(pump)
+	_asset_collision(pump, Vector3(0, 1.1, 0), Vector3(0.94, 2.2, 0.78))
+	_label(pump, "%02d" % number, Vector3(0, 1.24, 0.34), Color("#d4c4a1"), 26)
 	if number == 4:
-		var tag := _label(parent, "NIECZYNNE", p + Vector3(0, 1.62, 0.47), Color("#e1a272"), 20)
+		var tag := _label(pump, "NIECZYNNE", Vector3(0, 1.85, 0.46), Color("#e1a272"), 20)
 		tag.rotation.z = -0.18
+
+func _asset_collision(parent: Node3D, center: Vector3, size: Vector3) -> void:
+	var body := StaticBody3D.new()
+	var collider := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = size
+	collider.shape = shape
+	collider.position = center
+	body.add_child(collider)
+	parent.add_child(body)
+
+func _hero_wreck(pos: Vector3, yaw: float) -> void:
+	var wreck := WRECK_ASSET.instantiate() as Node3D
+	wreck.name = "Ashen coupe - abandoned evacuation car"
+	wreck.position = pos
+	wreck.rotation.y = yaw
+	add_child(wreck)
+	_asset_collision(wreck, Vector3(0, 0.68, 0), Vector3(2.15, 1.2, 4.9))
 
 func _station_cable(parent: Node3D, a: Vector3, b: Vector3, sag: float) -> void:
 	var previous := a
@@ -421,7 +441,7 @@ func _ruined_skyline() -> void:
 			_box(self, Vector3(x + rng.randf_range(-w / 2, w / 2), h + rng.randf_range(-1, 1), z), Vector3(rng.randf_range(1, 2), rng.randf_range(0.3, 1.4), d * 0.8), "concrete")
 
 func _vehicles() -> void:
-	_car(Vector3(3.3, 0.45, -38), 0.27, "car_red")
+	_hero_wreck(Vector3(3.3, 0.07, -38), 0.27)
 	_car(Vector3(-1.8, 0.45, 32), -0.38, "car_cream")
 	_car(Vector3(-7.5, 0.45, 8), 1.7, "paint")
 	_car(Vector3(11.5, 0.45, -7), -1.1, "rust")

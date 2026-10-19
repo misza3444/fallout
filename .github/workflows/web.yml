@@ -8,6 +8,7 @@ on:
       - 'scenes/**'
       - 'scripts/**'
       - 'shaders/**'
+      - 'assets/**'
       - '.github/workflows/web.yml'
   workflow_dispatch:
 

@@ -3,3 +3,7 @@
 build/
 *.tmp
 .DS_Store
+
+# Blender recovery files
+*.blend1
+*.blend2
