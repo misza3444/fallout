@@ -13,7 +13,7 @@
 - Sterowanie postacią FPP, sprint, kucanie, skok, rozglądanie myszą.
 - Wstępne sterowanie dotykowe i obrót kamery przeciągnięciem po ekranie.
 - Menu ustawień, zapisywanie pozycji i ustawień w `user://`.
-- GitHub Actions: import, kontrola błędów skryptów, eksport HTML5, artefakt do pobrania i próba wdrożenia GitHub Pages.
+- GitHub Actions: walidacja skryptów, test headless, eksport HTML5 do `public/`, zapis gotowych plików na gałęzi `main` i artefakt do pobrania.
 
 **Uwaga:** to pierwszy etap techniczno-wizualny; NIE jest to jeszcze pełna gra, system questów ani otwarty świat docelowej skali.
 
@@ -22,7 +22,7 @@
 1. Zainstaluj [Godot 4.7.2](https://godotengine.org/download/archive/4.7.2-stable/) (wersja zwykła, bez .NET).
 2. Sklonuj repozytorium i otwórz plik `project.godot`.
 3. Kliknij **F6/F5** w edytorze Godot, aby uruchomić scenę lub cały projekt.
-4. Eksport do przeglądarki: zainstaluj szablony eksportu, wybierz preset `Web`, eksportuj do `build/web/index.html`. Uruchom go przez serwer HTTP, nie z pliku `file://`.
+4. Eksport do przeglądarki: zainstaluj szablony eksportu, wybierz preset `Web`, eksportuj do `public/index.html`. Uruchom go przez serwer HTTP, nie z pliku `file://`.
 
 ### Sterowanie
 
@@ -38,11 +38,27 @@
 | Telefon: lewy panel | Przyciski ruchu |
 | Telefon: przeciągnięcie po prawej stronie | Rozglądanie |
 
-## Wersja web
+## Wersja web — Vercel (stan na 2026-10-19)
 
-Próba eksportu web jest wykonywana automatycznie przez workflow [Build and deploy Godot Web](https://github.com/misza3444/fallout/actions/workflows/web.yml). Nawet jeśli Pages nie zostało jeszcze aktywowane, przygotowany plik gry może być dostępny jako artefakt workflow `strefa-zero-web`, o ile build przejdzie kontrolę błędów.
+**Eksport HTML5 został wykonany i zweryfikowany w GitHub Actions.** Pliki `public/index.html`, `public/index.js`, `public/index.wasm`, `public/index.pck` oraz zasoby dodatkowe zostały zapisane w repozytorium przez workflow.
 
-Po udanym wdrożeniu GitHub Pages przewidywany adres to `https://misza3444.github.io/fallout/`. **Nie zakładamy, że adres już działa — zależy to od potwierdzonego wdrożenia.**
+- [Wynik poprawnego buildu](https://github.com/misza3444/fallout/actions/runs/39201649502)
+- [Gotowe pliki public/](public/)
+- [Konfiguracja Vercel](vercel.json)
+- [Workflow budowania i zapisu eksportu](.github/workflows/web.yml)
+
+**Adres Vercel jeszcze nie istnieje.** Automatyczna próba stworzenia projektu `strefa-zero` w zespole `michalkozlowski3444-gmailcoms-projects` nie powiodła się: integracja zwróciła `403 Forbidden` z informacją o braku autoryzacji dla tego scope. Nie oznaczamy publikacji jako gotowej.
+
+### Jednorazowe podłączenie Vercel
+
+1. Otwórz [Vercel — New Project](https://vercel.com/new).
+2. Wybierz własny zespół `michalkozlowski3444-gmailcoms-projects`.
+3. Zaimportuj repozytorium GitHub `misza3444/fallout` (jeśli go nie widzisz, nadaj Vercel dostęp do tego repozytorium w integracji GitHub).
+4. Wybierz nazwę projektu `strefa-zero`, gałąź produkcyjną `main`, Framework Preset: **Other**, Root Directory: **.** (root repozytorium).
+5. `vercel.json` deklaruje `framework: null` i `outputDirectory: "public"`. Nie jest wymagany proces kompilacji Godot w Vercel, ponieważ gotowy eksport jest już w `public/`.
+6. Kliknij **Deploy**. Dopiero po udanym wdrożeniu zweryfikuj adres projektu na Vercel w przeglądarce.
+
+Przy kolejnych zmianach kodu gry GitHub Actions przebudowuje `public/` i zapisuje gotową wersję na `main`. Po poprawnym połączeniu z repozytorium Vercel może wdrażać jego aktualne commity.
 
 ## Dokumentacja
 
