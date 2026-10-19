@@ -53,6 +53,22 @@
 
 Dla osób chcących hostować statyczny eksport inaczej (np. Netlify Drop) nadal można pobrać artefakt `strefa-zero-web` z uruchomienia GitHub Actions, rozpakować go i wgrać gotowe pliki na hosting. `vercel.json` pozostaje jako opcjonalna konfiguracja, ale Vercel nie jest wymagany.
 
+
+## Redesign terminala — Menu UI v1 (2026-10-19)
+
+Menu zostało przebudowane do oddzielnego modułu `scripts/terminal_menu.gd`, bez przepisywania sterowania i mechanik gry. Nowy interfejs zawiera:
+
+- duży tytuł STREFA ZERO i czytelny układ bunkrowego terminala z ciemnym metalowym panelem i fosforowym tekstem;
+- interaktywne menu 01–06, powrót z pauzy, kontynuację i rozpoczęcie nowej wyprawy;
+- wygaszany ekran rozruchu (boot), drobne linie CRT, ekranowe detale i skanowanie;
+- osobny radar/monitor sygnału z siatką, pierścieniami i wykresem na ekranach szerokich;
+- podmenu ustawień FOV, czułości myszy, palety zielony/bursztynowy, dźwięków i ograniczenia ruchu;
+- archiwum świata z wprowadzeniem fabularnym oraz niezależną kartę informacji o projekcie;
+- lokalnie generowane kliknięcia UI, bez pobierania plików audio;
+- responsywny tryb mniejszych ekranów oraz osobną informację o zamknięciu gry w przeglądarce.
+
+**Stan weryfikacji:** skrypty sprawdzane przez GitHub Actions i test uruchomienia headless; wygląd i sterowanie na prawdziwych urządzeniach wymagają oceny użytkownika. Archiwum zawiera na razie wpisy fabularne, nie pełen system questów.
+
 ## Dokumentacja
 
 - [ROADMAP.md](ROADMAP.md) — 10 etapów, kryteria odbioru, wersje 0.1–1.0.
