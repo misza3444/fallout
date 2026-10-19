@@ -7,7 +7,7 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** przeglądarka HTML5 / WebGL 2; sterowanie mobilne jako cel wymagający weryfikacji.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** commit `4e70a0d2`, GitHub Actions run `39242202575` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
+- **Ostatnia potwierdzona kompilacja:** commit `93f51c9d`, GitHub Actions run `39245688236` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** https://misza3444.github.io/fallout/ odpowiada HTTP 200. Eksport jest automatycznie zapisywany na `gh-pages`, następnie publikowany przez GitHub Pages. Sam kod HTTP nie potwierdza wyglądu ani grywalności.
@@ -18,7 +18,7 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - Komunikat zapisu wyprawy jest widoczny na stronie wyjścia, również podczas pauzy. Przycisk zapisu nie jest aktywny przed rozpoczęciem sesji.
 - Kontynuacja odrzuca brakujące/uszkodzone współrzędne i kąty oraz pozycję spoza sektora. Nie uruchamia po cichu nowej gry.
 - Pauza czyści dotykowe przyciski, skok i prędkość; nowa wyprawa również resetuje ruch.
-- Dodano krótki test zapisu/odczytu ustawień i pozycji oraz uszkodzonych danych: `tools/check_foundation.gd`. Wynik nowego CI: oczekuje.
+- Dodano krótki test zapisu/odczytu ustawień i pozycji oraz uszkodzonych danych: `tools/check_foundation.gd`. Wynik CI: **SUCCESS**, commit `93f51c9d`, run `39245688236`. Kontrola obejmuje również przyciski dotykowe, pauzę, wznowienie, zerowanie prędkości nowej wyprawy i komunikat zapisu. Import, start sceny, test fundamentów, eksport Web i zapis na gh-pages zaliczone.
 - ROADMAP i DEVELOPMENT_RULES uzgodnione z platformą web i istniejącym buildem.
 - Próba uruchomienia opublikowanej gry w zdalnym Chrome: **BLOCKED — brak WebGL2**. Nie zaliczono testu menu, świata, sterowania ani FPS. Etap 1 pozostaje ACTIVE.
 
