@@ -10,7 +10,7 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Ostatnia potwierdzona kompilacja:** commit `8483f005`, GitHub Actions run `39201649502` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
-- **Publikacja pod publicznym adresem:** BLOKADA — próba utworzenia projektu na Vercel zakończyła się `403 Forbidden` z powodu braku autoryzacji do zespołu `michalkozlowski3444-gmailcoms-projects`. Godot Web eksportuje poprawnie, a kompletna zawartość `public/` (w tym `.wasm` i `.pck`) jest już skomitowana na `main` i przygotowana do hostingu statycznego.
+- **Publikacja pod publicznym adresem:** Gałąź `gh-pages` z kompletnym eksportem Godot HTML5 przygotowana i zasilana przez GitHub Actions. **Hosting wymaga jednorazowego włączenia Pages** w Settings → Pages (Deploy from a branch, `gh-pages`, `/(root)`). Adres nie jest jeszcze potwierdzony jako dostępny.
 
 ## Wykonana praca
 
@@ -19,7 +19,7 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - Barwna stylizacja pustkowia: niebo, mgła, kierunkowe światło, materiały typu patina/grunge, detale budynków, neonowe oznaczenia.
 - Menu główne i kamera prezentacyjna, HUD, podstawowe ustawienia i zapis/odczyt.
 - Kontroler postaci FPP, klawiatura/mysz oraz wstępne sterowanie dotykowe.
-- CI/CD: import, smoke test uruchomienia, eksport web, artefakt, automatyczny commit katalogu `public/` i konfiguracja `vercel.json` (statyczny hosting).
+- CI/CD: import, smoke test uruchomienia, eksport web, artefakt oraz publikacja eksportu na osobną gałąź `gh-pages`; Vercel nie jest wymagany.
 
 ## Znane ograniczenia
 
@@ -29,13 +29,13 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 4. Nie ma jeszcze pomiarów FPS, ograniczenia draw calls wymagają profilowania mobilnego.
 5. Wdrożenie Vercel wymaga podłączenia repozytorium w panelu użytkownika albo odświeżenia autoryzacji zespołu w konektorze.
 
-## Odblokowanie publikacji na Vercel
+## Włączenie GitHub Pages (jednorazowo)
 
-1. Otwórz `https://vercel.com/new` i wybierz właściwy zespół.
-2. Zaimportuj `misza3444/fallout` z gałęzi `main`; nadaj integracji GitHub dostęp, jeśli repo nie jest widoczne.
-3. Ustaw Framework Preset **Other**, Root Directory **.**, Output Directory **public** (zgodnie z `vercel.json`).
-4. Wybierz **Deploy** i sprawdź URL podany przez Vercel.
-5. Brak potwierdzonego adresu i brak przeprowadzonego testu przeglądarkowego — do weryfikacji po publikacji.
+1. Wejdź w `https://github.com/misza3444/fallout/settings/pages`.
+2. Ustaw **Build and deployment → Source: Deploy from a branch**.
+3. Wybierz **Branch: gh-pages**, **Folder: /(root)** i kliknij **Save**.
+4. Po udanym wdrożeniu sprawdź `https://misza3444.github.io/fallout/`, w tym mobilne Safari.
+5. GitHub Actions ma automatycznie aktualizować `gh-pages` po zmianach w projekcie. Bez realnych testów przeglądarkowych pozostaw etap aktywny.
 
 ## Definicja ukończenia etapu 1
 
@@ -44,7 +44,7 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - [x] Sterowanie i ustawienia obecne w kodzie
 - [x] Pierwsza scenografia 3D i autorskie materiały obecne w kodzie
 - [x] Co najmniej jeden udany test uruchomienia headless oraz eksport HTML5
-- [ ] Publikacja działającego adresu przeglądarkowego (Vercel)
+- [ ] Publikacja działającego adresu przeglądarkowego (GitHub Pages)
 - [ ] Ręczna weryfikacja menu, sterowania, zapisu i wyglądu w realnej przeglądarce
 - [ ] Dopracowanie i zatwierdzenie oprawy wizualnej pierwszej sceny
 - [ ] Test podstawowych funkcji i wydajności na iPhonie
