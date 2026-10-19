@@ -3,11 +3,13 @@ extends Node3D
 
 const WASTELAND = preload("res://scripts/wasteland.gd")
 const PLAYER = preload("res://scripts/player.gd")
+const TERMINAL = preload("res://scripts/terminal_menu.gd")
 
 var world: Node3D
 var player: CharacterBody3D
 var menu_camera: Camera3D
 var menu_ui: Control
+var terminal: Control
 var hud_ui: Control
 var settings_ui: Control
 var about_ui: Control
@@ -25,8 +27,6 @@ func _ready() -> void:
 	_build_stage()
 	_build_menu()
 	_build_hud()
-	_build_settings()
-	_build_about()
 	_update_menu()
 	_update_pointer()
 
@@ -139,47 +139,31 @@ func _button(parent: Node, label: String, action: Callable) -> Button:
 
 func _build_menu() -> void:
 	menu_ui = _ui_root(10)
-	var touch := DisplayServer.is_touchscreen_available()
-	var width := 0.96 if touch else 0.50
-	_rect(menu_ui, Color("#101c1be9"), 0.0, 0.0, width, 1.0)
-	_rect(menu_ui, Color("#a6bc70"), width - 0.003, 0, width, 1)
-	var inner := MarginContainer.new()
-	inner.anchor_right = width
-	inner.anchor_bottom = 1
-	inner.add_theme_constant_override("margin_left", 26 if touch else 60)
-	inner.add_theme_constant_override("margin_right", 23 if touch else 45)
-	inner.add_theme_constant_override("margin_top", 32 if touch else 72)
-	inner.add_theme_constant_override("margin_bottom", 28)
-	menu_ui.add_child(inner)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
-	inner.add_child(column)
-	_text(column, "✦  ANOMALY SIGNAL // 2189", 15, Color("#bbce8b"))
-	column.add_child(HSeparator.new())
-	_text(column, "STREFA", 70 if not touch else 51, Color("#e7dfc3"))
-	_text(column, "ZERO", 89 if not touch else 65, Color("#bdce7d"))
-	_text(column, "POSTAPOKALIPTYCZNE RPG 3D", 15, Color("#bbbaa5"))
-	var space := Control.new()
-	space.custom_minimum_size.y = 28 if touch else 54
-	column.add_child(space)
-	resume_button = _button(column, "KONTYNUUJ", _continue_game)
-	_button(column, "NOWA WYPRAWA", _new_game)
-	_button(column, "USTAWIENIA", _open_settings)
-	_button(column, "O PROJEKCIE", _show_about)
-	var stretch := Control.new()
-	stretch.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(stretch)
-	_text(column, "SEKTOR 07  •  BUILD 0.1 DEV", 12, Color("#9da88b"))
-	_text(column, "PROTOTYP • OPRAWA 3D / WEBGL 2", 12, Color("#7e8c82"))
+	terminal = TERMINAL.new()
+	terminal.name = "SZ_Terminal"
+	terminal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	menu_ui.add_child(terminal)
+	terminal.new_game_requested.connect(_new_game)
+	terminal.continue_requested.connect(_continue_game)
+	terminal.save_requested.connect(_manual_save)
+	terminal.exit_requested.connect(_pause_game)
+
+
+func _manual_save() -> void:
+	if in_game:
+		GameState.save_position(player.position, player.rotation_degrees.y, player.pitch)
+		_notify("STAN WYPRAWY ZAPISANY  /  REJESTR ZABEZPIECZONY")
+		terminal.refresh_save()
+
 
 func _update_menu() -> void:
-	resume_button.visible = in_game or GameState.has_save
+	terminal.session_in_progress = in_game
+	terminal.refresh_save()
 
 func _start_play() -> void:
 	in_game = true
 	paused = false
 	menu_ui.hide()
-	settings_ui.hide()
 	hud_ui.show()
 	menu_camera.current = false
 	player.set_active(true)
@@ -208,6 +192,7 @@ func _pause_game() -> void:
 	player.camera.current = true
 	hud_ui.hide()
 	menu_ui.show()
+	terminal.show_home()
 	_update_menu()
 	_update_pointer()
 
@@ -219,10 +204,8 @@ func _update_pointer() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if settings_ui.visible or about_ui.visible:
-			settings_ui.hide()
-			about_ui.hide()
-			menu_ui.show()
+		if menu_ui.visible and terminal.current_screen != "home":
+			terminal.show_home()
 		elif in_game:
 			if paused:
 				_start_play()
@@ -339,79 +322,9 @@ func _touch_set(key: String, held: bool) -> void:
 		float(int(touches.get("down", false)) - int(touches.get("up", false)))
 	).limit_length(1.0)
 
-func _build_settings() -> void:
-	settings_ui = _ui_root(20)
-	settings_ui.hide()
-	_rect(settings_ui, Color("#0e1c1bf2"), 0, 0, 1, 1)
-	var layout := VBoxContainer.new()
-	layout.anchor_left = 0.15
-	layout.anchor_right = 0.85
-	layout.anchor_top = 0.12
-	layout.anchor_bottom = 0.90
-	layout.add_theme_constant_override("separation", 22)
-	settings_ui.add_child(layout)
-	_text(layout, "USTAWIENIA // TERMINAL", 30, Color("#b9cd85"))
-	_text(layout, "POLE WIDZENIA KAMERY", 17, Color("#e3dbc2"))
-	var fov_slider := HSlider.new()
-	fov_slider.min_value = 65
-	fov_slider.max_value = 100
-	fov_slider.step = 1
-	fov_slider.value = GameState.fov
-	fov_slider.value_changed.connect(func(v: float) -> void: GameState.fov = v)
-	layout.add_child(fov_slider)
-	_text(layout, "CZUŁOŚĆ MYSZY", 17, Color("#e3dbc2"))
-	var sens_slider := HSlider.new()
-	sens_slider.min_value = 0.03
-	sens_slider.max_value = 0.35
-	sens_slider.step = 0.01
-	sens_slider.value = GameState.sensitivity
-	sens_slider.value_changed.connect(func(v: float) -> void: GameState.sensitivity = v)
-	layout.add_child(sens_slider)
-	_button(layout, "ZAPISZ USTAWIENIA", func() -> void:
-		GameState.store_settings()
-		settings_ui.hide()
-		menu_ui.show()
-	)
-	_button(layout, "WRÓĆ DO MENU", func() -> void:
-		settings_ui.hide()
-		menu_ui.show()
-	)
-	_button(layout, "ZAPISZ GRĘ", func() -> void:
-		if in_game:
-			GameState.save_position(player.position, player.rotation_degrees.y, player.pitch)
-			_notify("STAN WYPRAWY ZAPISANY")
-		settings_ui.hide()
-		menu_ui.show()
-	)
-
 func _open_settings() -> void:
-	menu_ui.hide()
-	settings_ui.show()
+	terminal.show_page("settings")
 
-func _build_about() -> void:
-	about_ui = _ui_root(20)
-	about_ui.hide()
-	_rect(about_ui, Color("#0e1c1bf2"), 0, 0, 1, 1)
-	var layout := VBoxContainer.new()
-	layout.anchor_left = 0.15
-	layout.anchor_right = 0.85
-	layout.anchor_top = 0.12
-	layout.anchor_bottom = 0.88
-	layout.add_theme_constant_override("separation", 18)
-	about_ui.add_child(layout)
-	_text(layout, "STREFA ZERO // DOSSIER", 31, Color("#b9cd85"))
-	_text(layout, "ROK 2189 •  SEKTOR 07 •  PUSTKOWIE", 16, Color("#eedac0"))
-	var description := _text(layout,
-		"Po upadku starego świata pozostały skażone pustkowia, porzucone miasta i resztki dawnej technologii. Ten prototyp pozwala zwiedzić pierwszy fragment oryginalnego uniwersum STREFA ZERO.",
-		17, Color("#d2d3c2"))
-	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_text(layout, "WERSJA 0.1  /  PRE-ALPHA", 17, Color("#c9d790"))
-	_text(layout, "Godot 4.7.2 • Compatibility • WebGL 2", 14, Color("#9eb1a3"))
-	_button(layout, "POWRÓT", func() -> void:
-		about_ui.hide()
-		menu_ui.show()
-	)
 
 func _show_about() -> void:
-	menu_ui.hide()
-	about_ui.show()
+	terminal.show_page("about")
