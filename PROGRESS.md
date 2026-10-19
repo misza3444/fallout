@@ -12,6 +12,10 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** Gałąź `gh-pages` z kompletnym eksportem Godot HTML5 przygotowana i zasilana przez GitHub Actions. **Hosting wymaga jednorazowego włączenia Pages** w Settings → Pages (Deploy from a branch, `gh-pages`, `/(root)`). Adres nie jest jeszcze potwierdzony jako dostępny.
 
+## Redesign UI v1 (2026-10-19)
+
+Nowy moduł `scripts/terminal_menu.gd` z dedykowanymi podmenu, archiwum, ustawieniami, responsywną kompozycją, paletami CRT, dźwiękami i animowaną kartografią (`scripts/ui_radar.gd`, `shaders/terminal_crt.gdshader`). Stary moduł menu w `main.gd` zastąpiony nowym wywołaniem. Weryfikacja przez kompilację/test headless; odbiór wizualny w przeglądarce wciąż otwarty.
+
 ## Wykonana praca
 
 - Godot project + scene.
