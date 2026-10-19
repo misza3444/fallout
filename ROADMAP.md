@@ -1,6 +1,6 @@
 # ROADMAP — STREFA ZERO (RPG 3D)
 
-> Dokument planistyczny. Aktualizacja: 2026-10-18. **Żaden etap implementacji nie jest jeszcze ukończony.**
+> Dokument planistyczny. Aktualizacja: 2026-10-19. **Żaden etap implementacji nie jest jeszcze ukończony.**
 >
 > Statusy: ✅ DONE / 🟡 ACTIVE / ⬜ PENDING. Aktualny etap: **1 z 10**.
 
@@ -13,20 +13,30 @@ Zbudować samodzielną, rozwijalną grę RPG 3D w oryginalnym świecie postapoka
 ## Decyzje i założenia
 
 - **Technologia robocza:** Godot 4 / GDScript, Blender (eksport GLB), dane w Resources i/lub JSON, GitHub do kontroli zmian.
-- **Platforma:** wymaga potwierdzenia. Rekomendowany **PC / Windows jako pierwsza platforma**, możliwa adaptacja do web/mobile później. Nie traktować rekomendacji jako decyzji użytkownika.
+- **Platforma potwierdzona:** przeglądarka HTML5 / WebGL 2, z uwzględnieniem smartfonów i dotyku. Renderer Compatibility. Windows nie jest platformą priorytetową.
 - **Kamera:** FPP/TPP.
 - **Tryb:** singleplayer.
 - **Świat:** sektory, selektywne wczytywanie i trwały stan świata.
 - **Wymóg jakości:** grywalny świat i naturalne interakcje, a nie wyłącznie makieta lub liniowa seria poleceń.
 - **Zasada postępu:** etap uznajemy za DONE wyłącznie po rzeczywistym ukończeniu i weryfikacji kryteriów. Po każdym etapie ma istnieć działająca wersja gry (build na wybraną platformę).
-- **Stan na dzień zapisu:** plan istnieje; brak potwierdzonej implementacji, buildów i testów.
+- **Stan na dzień zapisu:** fundament, menu, FPP i pierwsza scena są zaimplementowane; eksport web oraz publikacja GitHub Pages potwierdzone. Aktualne wyniki i ograniczenia: [PROGRESS.md](PROGRESS.md). Odbiór wizualny i mobilny nadal otwarty.
+
+## Najbliższy blok — domknięcie etapu 1
+
+- Ujednolicić plan z potwierdzoną platformą web i istniejącą publikacją (wykonane 2026-10-19).
+- Uszczelnić zapis/odczyt i komunikaty o błędach oraz reset dotykowego sterowania przy pauzie.
+- Zweryfikować menu, ustawienia po restarcie, zapis/wczytanie i ruch w przeglądarce z WebGL2.
+- Odebrać wizualnie pierwszą lokację: stacja, nowe dystrybutory, wrak i materiały; następnie poprawić pozostałe placeholdery otoczenia.
+- Sprawdzić sterowanie dotykowe i FPS na fizycznym iPhonie. Emulacja rozmiaru ekranu nie zastępuje tego testu.
+
+Oprawa jest priorytetem już w etapie 1; etap 9 oznacza końcowe dopracowanie, a nie początek pracy nad grafiką. Etapy 2–10 pozostają nieukończone.
 
 ## Etapy implementacji
 
 ### 🟡 1. Fundament projektu i architektura — ACTIVE
 
 **Zakres:**
-- potwierdzenie platformy docelowej, wymagań sprzętowych oraz ustawień exportu;
+- platforma web potwierdzona; doprecyzowanie wymagań sprzętowych na podstawie pomiarów na docelowych urządzeniach;
 - utworzenie projektu Godot i uporządkowanych katalogów (np. scenes, scripts, assets, data, ui);
 - Game Manager i komunikacja między modułami przez zdarzenia/sygnały;
 - menu główne, ustawienia, ekran ładowania, zarządzanie scenami;

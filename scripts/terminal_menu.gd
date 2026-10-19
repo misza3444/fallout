@@ -25,6 +25,11 @@ var home_scroll: ScrollContainer
 var page_scroll: ScrollContainer
 var pages: Dictionary = {}
 var resume_btn: Button
+var save_btn: Button
+var save_feedback: Label
+var settings_feedback: Label
+var save_message: String = ""
+var save_failed: bool = false
 var session_in_progress: bool = false
 var root_menu: VBoxContainer
 var current_screen: String = "home"
@@ -390,6 +395,8 @@ func _build_pages(compact: bool) -> void:
 		_rebuild()
 	)
 	settings.add_child(motion_toggle)
+	settings_feedback = _label(settings, "", 14, AMBER)
+	settings_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_button(settings, "ZAPISZ USTAWIENIA", _save_and_home, compact)
 	_button(settings, "◀  POWRÓT", show_home, compact)
 
@@ -424,10 +431,13 @@ func _build_pages(compact: bool) -> void:
 
 	var exit_page := _section("exit", "POŁĄCZENIE / ZAKOŃCZ SESJĘ", compact)
 	var notice := _label(exit_page,
-		"WERSJA PRZEGLĄDARKOWA\nAby zakończyć sesję, zamknij kartę przeglądarki.\n\nPrzed wyjściem zapisz postać w ustawieniach, jeśli rozpocząłeś rozgrywkę.",
+		"WERSJA PRZEGLĄDARKOWA\nAby zakończyć sesję, zamknij kartę przeglądarki.\n\nPrzed wyjściem zapisz wyprawę przyciskiem poniżej. Zapis jest lokalny dla tej przeglądarki.",
 		16, CREAM)
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_button(exit_page, "ZAPISZ POZYCJĘ GRACZA", save_requested.emit, compact)
+	save_feedback = _label(exit_page, save_message, 14, AMBER if save_failed else GREEN)
+	save_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	save_btn = _button(exit_page, "ZAPISZ POZYCJĘ GRACZA", save_requested.emit, compact)
+	save_btn.disabled = not session_in_progress
 	_button(exit_page, "◀  POWRÓT", show_home, compact)
 
 	for name in pages:
@@ -476,10 +486,22 @@ func show_page(name: String) -> void:
 func refresh_save() -> void:
 	if resume_btn != null:
 		resume_btn.disabled = not GameState.has_save and not session_in_progress
+	if save_btn != null:
+		save_btn.disabled = not session_in_progress
+
+func set_save_feedback(message: String, failed: bool = false) -> void:
+	save_message = message
+	save_failed = failed
+	if save_feedback != null:
+		save_feedback.text = message
+		save_feedback.add_theme_color_override("font_color", AMBER if failed else GREEN)
 
 func _save_and_home() -> void:
-	GameState.store_settings()
-	_save_prefs()
+	var settings_result := GameState.store_settings()
+	var prefs_result := _save_prefs()
+	if settings_result != OK or prefs_result != OK:
+		settings_feedback.text = "NIE UDAŁO SIĘ ZAPISAĆ WSZYSTKICH USTAWIEŃ. SPRÓBUJ PONOWNIE."
+		return
 	show_home()
 
 func _load_prefs() -> void:
@@ -490,12 +512,12 @@ func _load_prefs() -> void:
 		reduce_motion = bool(cfg.get_value("terminal", "reduced_motion", false))
 		ui_sound = bool(cfg.get_value("terminal", "sounds", true))
 
-func _save_prefs() -> void:
+func _save_prefs() -> Error:
 	var cfg := ConfigFile.new()
 	cfg.set_value("terminal", "palette", accent_name)
 	cfg.set_value("terminal", "reduced_motion", reduce_motion)
 	cfg.set_value("terminal", "sounds", ui_sound)
-	cfg.save("user://terminal_ui.cfg")
+	return cfg.save("user://terminal_ui.cfg")
 
 func _build_sound() -> void:
 	_load_prefs()

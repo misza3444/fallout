@@ -22,4 +22,4 @@
 5. Eksport web uruchamia się w przeglądarce; wynik testu udokumentowany.
 6. Wszystkie źródła oraz instrukcja uruchomienia są zapisane w repozytorium.
 
-Status: etap w trakcie, brak potwierdzonego buildu web.
+Status: etap w trakcie. Build i publikacja web potwierdzone (run `39242202575`). Odbiór wizualny, interakcji i wydajności na urządzeniach pozostaje otwarty. Przeglądarka testowa 2026-10-19 zgłosiła brak WebGL2; nie jest to zaliczony test rozgrywki.

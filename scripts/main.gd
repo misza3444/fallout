@@ -151,8 +151,9 @@ func _build_menu() -> void:
 
 func _manual_save() -> void:
 	if in_game:
-		GameState.save_position(player.position, player.rotation_degrees.y, player.pitch)
-		_notify("STAN WYPRAWY ZAPISANY  /  REJESTR ZABEZPIECZONY")
+		var result := GameState.save_position(player.position, player.rotation_degrees.y, player.pitch)
+		var message := "STAN WYPRAWY ZAPISANY" if result == OK else "NIE UDAŁO SIĘ ZAPISAĆ WYPRAWY. SPRÓBUJ PONOWNIE."
+		terminal.set_save_feedback(message, result != OK)
 		terminal.refresh_save()
 
 
@@ -171,6 +172,8 @@ func _start_play() -> void:
 	_notify("SEKTOR 07  //  SYGNAŁ ODNALEZIONY")
 
 func _new_game() -> void:
+	_clear_touch_input()
+	player.velocity = Vector3.ZERO
 	player.position = Vector3(1, 1.35, 18)
 	player.rotation_degrees.y = 0
 	player.pitch = 0
@@ -182,11 +185,18 @@ func _continue_game() -> void:
 		_start_play()
 		return
 	var saved := GameState.read_position()
-	if not saved.is_empty():
-		player.restore(saved)
+	if saved.is_empty():
+		GameState.has_save = false
+		terminal.refresh_save()
+		terminal.set_save_feedback("BRAK POPRAWNEGO ZAPISU. ROZPOCZNIJ NOWĄ WYPRAWĘ.", true)
+		terminal.show_page("exit")
+		return
+	player.restore(saved)
 	_start_play()
 
 func _pause_game() -> void:
+	_clear_touch_input()
+	player.velocity = Vector3.ZERO
 	paused = true
 	player.set_active(false)
 	player.camera.current = true
@@ -306,7 +316,18 @@ func _build_touch_controls() -> void:
 	pause_btn.anchor_left = 1
 	pause_btn.anchor_right = 1
 
+func _clear_touch_input() -> void:
+	touches.clear()
+	player.touch_axis = Vector2.ZERO
+	player.touch_running = false
+	Input.action_release("jump")
+
 func _touch_set(key: String, held: bool) -> void:
+	if not in_game or paused:
+		return
+	if key == "menu" and held:
+		_pause_game()
+		return
 	touches[key] = held
 	if key == "jump" and held:
 		Input.action_press("jump")
@@ -314,8 +335,6 @@ func _touch_set(key: String, held: bool) -> void:
 		Input.action_release("jump")
 	elif key == "scan" and held:
 		_interact()
-	elif key == "menu" and held:
-		_pause_game()
 	player.touch_running = touches.get("run", false)
 	player.touch_axis = Vector2(
 		float(int(touches.get("right", false)) - int(touches.get("left", false))),

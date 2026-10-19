@@ -12,6 +12,16 @@ Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** https://misza3444.github.io/fallout/ odpowiada HTTP 200. Eksport jest automatycznie zapisywany na `gh-pages`, następnie publikowany przez GitHub Pages. Sam kod HTTP nie potwierdza wyglądu ani grywalności.
 
+## Uszczelnienie fundamentów (2026-10-19)
+
+- Zapis pozycji i ustawień zwraca rzeczywisty wynik zapisu pliku; błąd nie jest przedstawiany jako sukces.
+- Komunikat zapisu wyprawy jest widoczny na stronie wyjścia, również podczas pauzy. Przycisk zapisu nie jest aktywny przed rozpoczęciem sesji.
+- Kontynuacja odrzuca brakujące/uszkodzone współrzędne i kąty oraz pozycję spoza sektora. Nie uruchamia po cichu nowej gry.
+- Pauza czyści dotykowe przyciski, skok i prędkość; nowa wyprawa również resetuje ruch.
+- Dodano krótki test zapisu/odczytu ustawień i pozycji oraz uszkodzonych danych: `tools/check_foundation.gd`. Wynik nowego CI: oczekuje.
+- ROADMAP i DEVELOPMENT_RULES uzgodnione z platformą web i istniejącym buildem.
+- Próba uruchomienia opublikowanej gry w zdalnym Chrome: **BLOCKED — brak WebGL2**. Nie zaliczono testu menu, świata, sterowania ani FPS. Etap 1 pozostaje ACTIVE.
+
 ## Modele i materiały stacji — asset pass v1 (2026-10-19)
 
 Commit `4e70a0d2`, GitHub Actions run `39242202575`: SUCCESS — import, start headless, eksport HTML5 i zapis na `gh-pages`.
@@ -51,9 +61,9 @@ Nowy moduł `scripts/terminal_menu.gd` z dedykowanymi podmenu, archiwum, ustawie
 2. Nie przeprowadzono rzeczywistego testu graficznego ani wydajnościowego w przeglądarce na iPhonie/Androidzie/PC.
 3. Interakcje są na razie pokazowe, NPC, walkę, zadania i ekwipunek obejmują kolejne etapy.
 4. Nie ma jeszcze pomiarów FPS, ograniczenia draw calls wymagają profilowania mobilnego.
-5. Wdrożenie Vercel wymaga podłączenia repozytorium w panelu użytkownika albo odświeżenia autoryzacji zespołu w konektorze.
+5. Przeglądarka testowa 2026-10-19 wyświetliła komunikat o braku WebGL2. Nie uruchomiła menu ani sceny; brak możliwości oceny wizualnej w tym środowisku. Vercel nie jest potrzebny do publikacji.
 
-## Włączenie GitHub Pages (jednorazowo)
+## Konfiguracja GitHub Pages (już włączona; instrukcja odtworzenia)
 
 1. Wejdź w `https://github.com/misza3444/fallout/settings/pages`.
 2. Ustaw **Build and deployment → Source: Deploy from a branch**.
@@ -68,7 +78,7 @@ Nowy moduł `scripts/terminal_menu.gd` z dedykowanymi podmenu, archiwum, ustawie
 - [x] Sterowanie i ustawienia obecne w kodzie
 - [x] Pierwsza scenografia 3D i autorskie materiały obecne w kodzie
 - [x] Co najmniej jeden udany test uruchomienia headless oraz eksport HTML5
-- [ ] Publikacja działającego adresu przeglądarkowego (GitHub Pages)
+- [x] Publikacja adresu przeglądarkowego (GitHub Pages; HTTP 200 i udane wdrożenie — nie oznacza odbioru rozgrywki)
 - [ ] Ręczna weryfikacja menu, sterowania, zapisu i wyglądu w realnej przeglądarce
 - [ ] Dopracowanie i zatwierdzenie oprawy wizualnej pierwszej sceny
 - [ ] Test podstawowych funkcji i wydajności na iPhonie

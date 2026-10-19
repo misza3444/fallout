@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'shaders/**'
       - 'assets/**'
+      - 'tools/check_foundation.gd'
       - '.github/workflows/web.yml'
   workflow_dispatch:
 
@@ -44,6 +45,12 @@ jobs:
           set -eo pipefail
           godot --headless --path . --quit-after 60 2>&1 | tee /tmp/godot-runtime.log
           if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:|Invalid call' /tmp/godot-runtime.log; then exit 1; fi
+      - name: Check save and settings persistence
+        shell: bash
+        run: |
+          set -eo pipefail
+          godot --headless --path . --script res://tools/check_foundation.gd 2>&1 | tee /tmp/godot-foundation.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' /tmp/godot-foundation.log; then exit 1; fi
       - name: Export HTML5
         shell: bash
         run: |

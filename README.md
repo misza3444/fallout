@@ -42,14 +42,14 @@
 
 **Aktualna droga publikacji: GitHub Pages**. Nie wymaga Vercel ani osobnego serwera. Gałąź [gh-pages](https://github.com/misza3444/fallout/tree/gh-pages) zawiera pliki gry HTML5 w katalogu głównym. Każda zmiana skryptów, scen lub shaderów na `main` powoduje automatyczne zbudowanie nowego eksportu Godot i aktualizację `gh-pages` przez [GitHub Actions](https://github.com/misza3444/fallout/actions/workflows/web.yml).
 
-### Jednorazowe włączenie strony
+### Konfiguracja strony (Pages jest już włączone)
 
 1. Otwórz [Settings → Pages](https://github.com/misza3444/fallout/settings/pages) w repozytorium.
 2. W **Build and deployment → Source** wybierz **Deploy from a branch**.
 3. W **Branch** ustaw `gh-pages`, katalog `/(root)`, a następnie kliknij **Save**.
 4. Poczekaj na publikację w [Actions](https://github.com/misza3444/fallout/actions). Po sukcesie sprawdź adres: **https://misza3444.github.io/fallout/**.
 
-**Uwaga:** przed włączeniem Pages ten adres nie musi działać. Eksport headless (silnik, pliki, startup) to nie to samo co ręczny test gry w prawdziwej przeglądarce. Sterowanie dotykowe i wydajność na iPhonie wymagają sprawdzenia.
+**Gra jest opublikowana:** https://misza3444.github.io/fallout/. Eksport headless (silnik, pliki, startup) to nie to samo co ręczny test gry w prawdziwej przeglądarce. Sterowanie dotykowe i wydajność na iPhonie wymagają sprawdzenia.
 
 Dla osób chcących hostować statyczny eksport inaczej (np. Netlify Drop) nadal można pobrać artefakt `strefa-zero-web` z uruchomienia GitHub Actions, rozpakować go i wgrać gotowe pliki na hosting. `vercel.json` pozostaje jako opcjonalna konfiguracja, ale Vercel nie jest wymagany.
 
