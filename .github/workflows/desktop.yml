@@ -35,10 +35,11 @@ jobs:
       - name: Import and export Windows
         shell: pwsh
         run: |
-          godot --headless --path . --editor --quit 2>&1 | Tee-Object import.log
+          $godotConsole = Join-Path $env:USERPROFILE 'godot/Godot_v4.7.2-stable_win64_console.exe'
+          & $godotConsole --headless --path . --editor --quit 2>&1 | Tee-Object import.log
           if ($LASTEXITCODE -ne 0 -or (Select-String -Path import.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Import failed' }
           New-Item -ItemType Directory -Force build/windows | Out-Null
-          godot --headless --path . --export-release 'Windows Portable' build/windows/STREFA_ZERO.exe 2>&1 | Tee-Object export.log
+          & $godotConsole --headless --path . --export-release 'Windows Portable' build/windows/STREFA_ZERO.exe 2>&1 | Tee-Object export.log
           if ($LASTEXITCODE -ne 0 -or (Select-String -Path export.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Export failed' }
           if (!(Test-Path build/windows/STREFA_ZERO.exe) -or !(Test-Path build/windows/STREFA_ZERO.pck)) { throw 'Missing game files' }
       - name: Verify exported EXE and portable storage
