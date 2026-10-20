@@ -22,4 +22,4 @@
 5. Eksport Windows EXE uruchamia się, zapisuje dane obok aplikacji i można go przenieść jako folder; wynik testu udokumentowany.
 6. Wszystkie źródła oraz instrukcja uruchomienia są zapisane w repozytorium.
 
-Status: etap w trakcie. Pierwszy build Windows Portable oczekuje na weryfikację. Build i publikacja web potwierdzone (run `39242202575`). Odbiór wizualny, interakcji i wydajności na urządzeniach pozostaje otwarty. Przeglądarka testowa 2026-10-19 zgłosiła brak WebGL2; nie jest to zaliczony test rozgrywki.
+Status: etap w trakcie. Windows Portable 0.1.6 zbudowany i sprawdzony automatycznie na Windows (run `39471186695`); ręczny odbiór gry pozostaje otwarty. Build i publikacja web potwierdzone (run `39242202575`). Odbiór wizualny, interakcji i wydajności na urządzeniach pozostaje otwarty. Przeglądarka testowa 2026-10-19 zgłosiła brak WebGL2; nie jest to zaliczony test rozgrywki.

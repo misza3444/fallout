@@ -2,6 +2,16 @@
 
 Ostatnia aktualizacja: 2026-10-20. Projekt: https://github.com/misza3444/fallout
 
+## Światło, materiały i kadry — art pass 2 (2026-10-20)
+
+- Osłabione i odbarwione światło słoneczne; chłodniejsze światło otoczenia, mniejsza ekspozycja i spokojniejsza mgła.
+- Przygaszone materiały asfaltu, betonu i rdzy, słabsze normal mapy oraz subtelniejszy szum materiałów proceduralnych.
+- Płynny kolor gruntu liczony z pozycji zamiast powtarzanego wzoru kwadratów.
+- Ciepła lampa awaryjna w sklepie i lokalne światło pod zadaszeniem.
+- Kamera menu i widok stacji przeniesione na przedpole po lewej stronie; słup szyldu nie stoi bezpośrednio przed obiektywem.
+- Dodany kadr dystrybutora. Dla tej iteracji CI renderuje również poprzednie materiały i światło z tą samą kamerą, aby porównanie było miarodajne.
+- Wynik buildu i odbioru renderu: oczekuje. Etap 1 nadal ACTIVE.
+
 ## Windows Portable — zmiana platformy (2026-10-20)
 
 Na prośbę użytkownika głównym wydaniem jest Windows x64: EXE + PCK w paczce `STREFA_ZERO_Windows_Portable.zip`, bez instalatora. Zapisy, ustawienia i preferencje terminala w `userdata/` obok EXE. Dane przeglądarkowe nie migrują automatycznie. Przy aktualizacji zachować userdata.

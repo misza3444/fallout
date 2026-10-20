@@ -97,8 +97,8 @@ func _process(delta: float) -> void:
 		position_text.text = "SEKTOR 07    •    %03d / %03d" % [absf(p.x), absf(p.z)]
 
 func _animate_camera(t: float) -> void:
-	menu_camera.position = Vector3(15 + sin(t * 0.18) * 1.7, 9.6 + sin(t * 0.27) * 0.3, 24 + cos(t * 0.14) * 2.0)
-	menu_camera.look_at(Vector3(-8, 4.1, -22), Vector3.UP)
+	menu_camera.position = Vector3(-28.0 + sin(t * 0.1) * 0.8, 7.2 + sin(t * 0.15) * 0.15, -7.0 + cos(t * 0.1) * 0.8)
+	menu_camera.look_at(Vector3(-13.5, 2.8, -25.0), Vector3.UP)
 
 func _ui_root(layer: int) -> Control:
 	var canvas := CanvasLayer.new()

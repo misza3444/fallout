@@ -1,6 +1,6 @@
 extends Node3D
 ## Hand-built procedural environment: geometry, props, composition and art direction.
-## Browser-first: bundled GLB assets/PBR maps; no runtime external downloads.
+## Bundled GLB assets/PBR maps; desktop lighting with an optional web export.
 
 const SEED := 2189
 const PUMP_ASSET: PackedScene = preload("res://assets/models/ashen_pump.glb")
@@ -147,7 +147,8 @@ func _terrain() -> void:
 	noise.frequency = 0.075
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var colors := [Color("#8e8067"), Color("#9b8265"), Color("#7a785f"), Color("#a18a6b")]
+	var sand_low := Color("#6c6557")
+	var sand_high := Color("#95866b")
 	for iz in range(100):
 		for ix in range(100):
 			var x := float(ix - 50) * 2.5
@@ -162,7 +163,9 @@ func _terrain() -> void:
 					h *= 0.1
 				points.append(Vector3(px, h - 0.25, pz))
 			for p in points:
-				st.set_color(colors[(ix * 7 + iz * 13) % colors.size()])
+				# Shared positions get the same smooth color, avoiding the old tile grid.
+				var shade := clampf(0.5 + noise.get_noise_2d(p.x * 0.24, p.z * 0.24), 0.0, 1.0)
+				st.set_color(sand_low.lerp(sand_high, shade))
 				st.add_vertex(p)
 	st.generate_normals()
 	var terrain_mesh := MeshInstance3D.new()
@@ -543,40 +546,51 @@ func _shrub(p: Vector3, s: float) -> void:
 
 func _lighting() -> void:
 	var env := WorldEnvironment.new()
-	env.name = "Sirocco / dusk atmosphere"
+	env.name = "Ashen Mile / balanced late afternoon"
 	var e := Environment.new()
 	e.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
 	var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color("#394e55")
-	sky_material.sky_horizon_color = Color("#d09b6c")
-	sky_material.ground_bottom_color = Color("#4a3e37")
-	sky_material.ground_horizon_color = Color("#ad9276")
-	sky_material.sun_angle_max = 20.0
+	sky_material.sky_top_color = Color("#455c6b")
+	sky_material.sky_horizon_color = Color("#a9a294")
+	sky_material.ground_bottom_color = Color("#363c40")
+	sky_material.ground_horizon_color = Color("#847e72")
+	sky_material.sun_angle_max = 4.0
 	sky.sky_material = sky_material
 	e.sky = sky
 	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	e.ambient_light_color = Color("#c8a98c")
-	e.ambient_light_energy = 0.82
+	e.ambient_light_color = Color("#889aa3")
+	e.ambient_light_energy = 0.4
+	e.ambient_light_sky_contribution = 0.0
 	e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	e.tonemap_exposure = 0.9
 	e.fog_enabled = true
-	e.fog_light_color = Color("#ae9379")
-	e.fog_density = 0.009
-	e.fog_aerial_perspective = 0.4
+	e.fog_light_color = Color("#999b94")
+	e.fog_density = 0.006
+	e.fog_aerial_perspective = 0.25
 	env.environment = e
 	add_child(env)
 	var sun := DirectionalLight3D.new()
 	sun.name = "Low amber sun"
 	sun.rotation_degrees = Vector3(-28, -48, 0)
-	sun.light_color = Color("#ffcb91")
-	sun.light_energy = 1.35
+	sun.light_color = Color("#ffe1bd")
+	sun.light_energy = 0.95
 	sun.shadow_enabled = not DisplayServer.is_touchscreen_available() # Desktop depth, mobile fallback.
 	add_child(sun)
-	var neon := OmniLight3D.new()
-	neon.position = Vector3(-6, 4.5, -18)
-	neon.light_color = Color("#b5ce82")
-	neon.light_energy = 0.75
-	neon.omni_range = 8
-	neon.shadow_enabled = false
-	add_child(neon)
+	var canopy_light := OmniLight3D.new()
+	canopy_light.name = "Surviving canopy fixture"
+	canopy_light.position = Vector3(-12.0, 4.4, -19.0)
+	canopy_light.light_color = Color("#e8bf84")
+	canopy_light.light_energy = 0.5
+	canopy_light.omni_range = 6.0
+	canopy_light.shadow_enabled = false
+	add_child(canopy_light)
+	var shop_light := OmniLight3D.new()
+	shop_light.name = "Shop emergency light"
+	shop_light.position = Vector3(-17.0, 2.6, -32.0)
+	shop_light.light_color = Color("#e5bc87")
+	shop_light.light_energy = 0.65
+	shop_light.omni_range = 5.0
+	shop_light.shadow_enabled = false
+	add_child(shop_light)
 

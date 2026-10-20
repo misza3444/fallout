@@ -21,8 +21,8 @@ void fragment() {
     vec3 cell = floor(world_coordinates * fleck_scale);
     float grain = hash_3d(cell);
     float stains = hash_3d(floor(world_coordinates * 0.53));
-    float wear = mix(0.9, 0.57 + grain * 0.64, weathering);
-    wear *= mix(0.83, 1.07, stains);
+    float wear = mix(0.94, 0.88 + grain * 0.12, weathering);
+    wear *= mix(0.92, 1.0, stains);
     ALBEDO = clamp(base_color.rgb * wear, vec3(0.0), vec3(1.0));
     ROUGHNESS = 0.95;
     METALLIC = metalness;

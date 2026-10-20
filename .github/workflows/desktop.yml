@@ -110,13 +110,34 @@ jobs:
           printf 'STATION_PREVIEW_BASE64='
           base64 -w0 build/screenshots/03_station.jpg
           printf '\n'
+      - name: Render art-pass-2 baseline with the same camera
+        if: contains(github.event.head_commit.message, 'art-pass-2')
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          BASELINE_DIR="$RUNNER_TEMP/strefa-art-before"
+          git fetch --depth=1 origin ce4b324157945afdf9e7f2d9c7fefede6e4ebefa
+          git worktree add --detach "$BASELINE_DIR" FETCH_HEAD
+          cp tools/capture_desktop.gd "$BASELINE_DIR/tools/capture_desktop.gd"
+          godot --headless --path "$BASELINE_DIR" --editor --quit 2>&1 | tee build/before-import.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' build/before-import.log; then exit 1; fi
+          mkdir -p build/before
+          timeout 150 xvfb-run -a -s '-screen 0 1280x720x24' godot --path "$BASELINE_DIR" --rendering-method gl_compatibility --rendering-driver opengl3 --audio-driver Dummy --resolution 1280x720 --script res://tools/capture_desktop.gd -- --output="$GITHUB_WORKSPACE/build/before" 2>&1 | tee build/before-render.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' build/before-render.log; then exit 1; fi
+          test -s build/before/03_station.png
+          printf 'BEFORE_STATION_PREVIEW_BASE64='
+          base64 -w0 build/before/03_station.jpg
+          printf '\n'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: desktop-previews
           path: |
             build/screenshots/*.png
+            build/before/*.png
             build/render.log
+            build/before-render.log
           retention-days: 30
 
   release:
@@ -139,5 +160,10 @@ jobs:
         run: |
           set -euo pipefail
           printf '%s\n' 'Windows x64 portable pre-alpha. Rozpakuj ZIP i uruchom STREFA_ZERO.exe. Zachowaj userdata przy aktualizacji.' 'EXE uruchomione i zapis sprawdzony na Windows runnerze w trybie headless. Kadry PNG pochodza z tej samej sceny renderowanej na Linux/Mesa; nie sa pomiarem wydajnosci Windows.' "Source: $GITHUB_SHA" > release-notes.txt
+          EXTRA_FILES=()
+          if [ -f previews/before/03_station.png ]; then
+            cp previews/before/03_station.png previews/03_station_before.png
+            EXTRA_FILES+=(previews/03_station_before.png)
+          fi
           TAG="portable-0.1.$GITHUB_RUN_NUMBER"
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "STREFA ZERO Windows Portable 0.1.$GITHUB_RUN_NUMBER" --notes-file release-notes.txt package/STREFA_ZERO_Windows_Portable.zip package/SHA256.txt previews/screenshots/*.png
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "STREFA ZERO Windows Portable 0.1.$GITHUB_RUN_NUMBER" --notes-file release-notes.txt package/STREFA_ZERO_Windows_Portable.zip package/SHA256.txt previews/screenshots/*.png "${EXTRA_FILES[@]}"

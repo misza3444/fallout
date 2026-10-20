@@ -6,13 +6,14 @@
 
 [resource]
 resource_name = "Poly Haven / rust"
+albedo_color = Color(0.58, 0.43, 0.33, 1)
 albedo_texture = ExtResource("1")
-metallic = 0.25
+metallic = 0.1
 roughness_texture = ExtResource("3")
 normal_enabled = true
-normal_scale = 0.65
+normal_scale = 0.35
 normal_texture = ExtResource("2")
 uv1_triplanar = true
 uv1_world_triplanar = true
-uv1_scale = Vector3(1.0, 1.0, 1.0)
+uv1_scale = Vector3(0.65, 0.65, 0.65)
 uv1_triplanar_sharpness = 8.0

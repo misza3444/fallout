@@ -23,12 +23,15 @@ func _capture() -> void:
 	game.player.camera.current = false
 	game.menu_camera.current = true
 	game.hud_ui.hide()
-	game.menu_camera.position = Vector3(-4.0, 5.5, -12.0)
-	game.menu_camera.look_at(Vector3(-17.0, 2.0, -28.0))
+	game.menu_camera.position = Vector3(-28.0, 7.2, -6.0)
+	game.menu_camera.look_at(Vector3(-13.5, 2.8, -25.0))
 	await _frame("03_station.png")
 	game.menu_camera.position = Vector3(8.0, 2.8, -32.0)
 	game.menu_camera.look_at(Vector3(3.3, 0.8, -38.0))
 	await _frame("04_wreck.png")
+	game.menu_camera.position = Vector3(-16.4, 1.8, -13.0)
+	game.menu_camera.look_at(Vector3(-13.8, 1.3, -16.9))
+	await _frame("05_pump.png")
 	print("Desktop frames captured: ", output_dir)
 	game.queue_free()
 	await process_frame
