@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: strefa-zero-desktop
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   windows:
@@ -51,8 +51,11 @@ jobs:
         run: |
           $game = (Resolve-Path build/windows/STREFA_ZERO.exe).Path
           $log = Join-Path $env:RUNNER_TEMP 'portable-check.log'
-          $process = Start-Process -FilePath $game -ArgumentList @('--headless', '--script', 'res://tools/check_foundation.gd', '--log-file', $log) -Wait -PassThru
+          $process = Start-Process -FilePath $game -ArgumentList @('--headless', '--script', 'res://tools/check_foundation.gd', '--log-file', $log) -PassThru
+          $finished = $process.WaitForExit(60000)
+          if (!$finished) { Stop-Process -Id $process.Id -Force }
           Get-Content $log
+          if (!$finished) { throw 'Portable runtime check timed out after 60 seconds; see log above' }
           if ($process.ExitCode -ne 0 -or (Select-String -Path $log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Portable check failed' }
           if (!(Select-String -Path $log -Pattern 'Foundation persistence checks: PASS')) { throw 'Checks did not finish' }
           if (!(Test-Path build/windows/userdata)) { throw 'Portable directory was not created beside EXE' }
