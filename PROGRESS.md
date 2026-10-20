@@ -6,7 +6,7 @@ Ostatnia aktualizacja: 2026-10-20. Projekt: https://github.com/misza3444/fallout
 
 Na prośbę użytkownika głównym wydaniem jest Windows x64: EXE + PCK w paczce `STREFA_ZERO_Windows_Portable.zip`, bez instalatora. Zapisy, ustawienia i preferencje terminala w `userdata/` obok EXE. Dane przeglądarkowe nie migrują automatycznie. Przy aktualizacji zachować userdata.
 
-Workflow `desktop.yml` eksportuje grę i uruchamia wyeksportowane EXE na Windows. Osobne zadanie renderuje rzeczywiste kadry menu, startu gracza, stacji i wraku z desktopowego Godota Linux/Mesa. To odbiór grafiki, nie pomiar wydajności Windows. Kadry trafiają do artefaktu i osobnej gałęzi `desktop-previews`; po powodzeniu powstaje wydanie do pobrania w Releases.
+Workflow `desktop.yml` eksportuje grę i uruchamia wyeksportowane EXE na Windows. Osobne zadanie renderuje rzeczywiste kadry menu, startu gracza, stacji i wraku z desktopowego Godota Linux/Mesa. To odbiór grafiki, nie pomiar wydajności Windows. Kadry trafiają do artefaktu oraz plików wydania w Releases. Automatyczna publikacja dodatkowej gałęzi została pominięta po odmowie uprawnienia workflows przez token Actions; nie rozszerzano uprawnień.
 
 Wynik pierwszego buildu: oczekuje. Etap 1 pozostaje ACTIVE. Testy mobilne nie są bramką etapu desktop. Web jest opcjonalny; workflow web uruchamiany ręcznie.
 

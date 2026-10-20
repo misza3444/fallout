@@ -35,12 +35,16 @@ jobs:
       - name: Import and export Windows
         shell: pwsh
         run: |
-          $godotConsole = Join-Path $env:USERPROFILE 'godot/Godot_v4.7.2-stable_win64_console.exe'
-          & $godotConsole --headless --path . --editor --quit 2>&1 | Tee-Object import.log
-          if ($LASTEXITCODE -ne 0 -or (Select-String -Path import.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Import failed' }
+          $godotExe = Join-Path $env:USERPROFILE 'godot/Godot_v4.7.2-stable_win64.exe'
+          $importLog = Join-Path $env:GITHUB_WORKSPACE 'import.log'
+          $process = Start-Process -FilePath $godotExe -ArgumentList @('--headless', '--path', '.', '--editor', '--quit', '--log-file', $importLog) -Wait -PassThru
+          Get-Content $importLog
+          if ($process.ExitCode -ne 0 -or (Select-String -Path $importLog -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Import failed' }
           New-Item -ItemType Directory -Force build/windows | Out-Null
-          & $godotConsole --headless --path . --export-release 'Windows Portable' build/windows/STREFA_ZERO.exe 2>&1 | Tee-Object export.log
-          if ($LASTEXITCODE -ne 0 -or (Select-String -Path export.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Export failed' }
+          $exportLog = Join-Path $env:GITHUB_WORKSPACE 'export.log'
+          $process = Start-Process -FilePath $godotExe -ArgumentList @('--headless', '--path', '.', '--export-release', '"Windows Portable"', 'build/windows/STREFA_ZERO.exe', '--log-file', $exportLog) -Wait -PassThru
+          Get-Content $exportLog
+          if ($process.ExitCode -ne 0 -or (Select-String -Path $exportLog -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Export failed' }
           if (!(Test-Path build/windows/STREFA_ZERO.exe) -or !(Test-Path build/windows/STREFA_ZERO.pck)) { throw 'Missing game files' }
       - name: Verify exported EXE and portable storage
         shell: pwsh
@@ -77,8 +81,6 @@ jobs:
   previews:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: chickensoft-games/setup-godot@v2.4.1
@@ -109,26 +111,6 @@ jobs:
             build/screenshots/*.png
             build/render.log
           retention-days: 30
-      - name: Save inspectable frames on preview branch
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          PREVIEW_DIR="$RUNNER_TEMP/strefa-preview"
-          if git ls-remote --exit-code --heads origin desktop-previews; then
-            git fetch origin desktop-previews
-            git worktree add -B desktop-previews "$PREVIEW_DIR" origin/desktop-previews
-          else
-            git worktree add -b desktop-previews "$PREVIEW_DIR" HEAD
-          fi
-          mkdir -p "$PREVIEW_DIR/previews"
-          cp build/screenshots/*.jpg "$PREVIEW_DIR/previews/"
-          printf '%s\n' "$GITHUB_SHA" > "$PREVIEW_DIR/previews/SOURCE_COMMIT.txt"
-          git -C "$PREVIEW_DIR" add previews
-          if ! git -C "$PREVIEW_DIR" diff --cached --quiet; then
-            git -C "$PREVIEW_DIR" commit -m "docs: actual desktop renders [skip ci]"
-            git -C "$PREVIEW_DIR" push origin HEAD:desktop-previews
-          fi
 
   release:
     needs: [windows, previews]

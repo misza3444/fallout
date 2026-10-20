@@ -25,7 +25,7 @@ Zapisy i ustawienia: `userdata/` obok EXE. Przenoś cały folder i zachowaj user
 
 Menu Wyjście udostępnia zapis i zamknięcie aplikacji. Przycisk X okna otwiera tę stronę, aby można było zapisać przed zamknięciem.
 
-[Workflow desktop](https://github.com/misza3444/fallout/actions/workflows/desktop.yml) buduje i sprawdza EXE na Windows. Artefakt `desktop-previews` i gałąź `desktop-previews` zawierają rzeczywiste kadry tego samego projektu renderowanego na Linux/Mesa. Nie reprezentują wydajności karty graficznej użytkownika.
+[Workflow desktop](https://github.com/misza3444/fallout/actions/workflows/desktop.yml) buduje i sprawdza EXE na Windows. Artefakt `desktop-previews` i pliki PNG w Releases zawierają rzeczywiste kadry tego samego projektu renderowanego na Linux/Mesa. Nie reprezentują wydajności karty graficznej użytkownika.
 
 ## Uruchomienie lokalnie
 
