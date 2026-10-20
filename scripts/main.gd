@@ -4,6 +4,7 @@ extends Node3D
 const WASTELAND = preload("res://scripts/wasteland.gd")
 const PLAYER = preload("res://scripts/player.gd")
 const TERMINAL = preload("res://scripts/terminal_menu.gd")
+const PORTABLE_CHECK = preload("res://tools/check_portable.gd")
 
 var world: Node3D
 var player: CharacterBody3D
@@ -31,6 +32,12 @@ func _ready() -> void:
 	_update_pointer()
 	if not OS.has_feature("web"):
 		get_tree().auto_accept_quit = false
+	if OS.has_feature("portable") and OS.get_cmdline_user_args().has("--portable-check"):
+		call_deferred("_run_portable_check")
+
+func _run_portable_check() -> void:
+	var result: int = PORTABLE_CHECK.run(self)
+	get_tree().quit(result)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and not OS.has_feature("web") and terminal != null:

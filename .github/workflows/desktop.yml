@@ -50,15 +50,16 @@ jobs:
         shell: pwsh
         run: |
           $game = (Resolve-Path build/windows/STREFA_ZERO.exe).Path
-          $log = Join-Path $env:RUNNER_TEMP 'portable-check.log'
-          $process = Start-Process -FilePath $game -ArgumentList @('--headless', '--script', 'res://tools/check_foundation.gd', '--log-file', $log) -PassThru
+          $report = Join-Path $env:GITHUB_WORKSPACE 'build/windows/userdata/portable-check.txt'
+          $process = Start-Process -FilePath $game -ArgumentList @('--headless', '--', '--portable-check') -PassThru
           $finished = $process.WaitForExit(60000)
-          if (!$finished) { Stop-Process -Id $process.Id -Force }
-          Get-Content $log
-          if (!$finished) { throw 'Portable runtime check timed out after 60 seconds; see log above' }
-          if ($process.ExitCode -ne 0 -or (Select-String -Path $log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Portable check failed' }
-          if (!(Select-String -Path $log -Pattern 'Foundation persistence checks: PASS')) { throw 'Checks did not finish' }
-          if (!(Test-Path build/windows/userdata)) { throw 'Portable directory was not created beside EXE' }
+          if (!$finished) { Stop-Process -Id $process.Id -Force; throw 'Portable check timed out' }
+          $process.Refresh()
+          if (!(Test-Path $report)) { throw 'Application did not write its portable check report' }
+          Get-Content $report
+          if ($process.ExitCode -ne 0 -or (Select-String -Path $report -Pattern 'FAIL')) { throw 'Portable check failed' }
+          if (!(Select-String -Path $report -Pattern 'Portable checks: PASS')) { throw 'Checks did not finish' }
+          Remove-Item -LiteralPath $report
       - name: Package portable game
         shell: pwsh
         run: |
@@ -106,6 +107,9 @@ jobs:
           test -s build/screenshots/01_menu.png
           test -s build/screenshots/03_station.png
           test -s build/screenshots/04_wreck.png
+          printf 'STATION_PREVIEW_BASE64='
+          base64 -w0 build/screenshots/03_station.jpg
+          printf '\n'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
