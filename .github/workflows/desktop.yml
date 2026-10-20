@@ -95,7 +95,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build/screenshots
-          timeout 150 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --rendering-method gl_compatibility --rendering-driver opengl3 --resolution 1280x720 --script res://tools/capture_desktop.gd 2>&1 | tee build/render.log
+          timeout 150 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --rendering-method gl_compatibility --rendering-driver opengl3 --audio-driver Dummy --resolution 1280x720 --script res://tools/capture_desktop.gd 2>&1 | tee build/render.log
           if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' build/render.log; then exit 1; fi
           test -s build/screenshots/01_menu.png
           test -s build/screenshots/03_station.png
@@ -121,7 +121,7 @@ jobs:
             git worktree add -b desktop-previews "$PREVIEW_DIR" HEAD
           fi
           mkdir -p "$PREVIEW_DIR/previews"
-          cp build/screenshots/*.png "$PREVIEW_DIR/previews/"
+          cp build/screenshots/*.jpg "$PREVIEW_DIR/previews/"
           printf '%s\n' "$GITHUB_SHA" > "$PREVIEW_DIR/previews/SOURCE_COMMIT.txt"
           git -C "$PREVIEW_DIR" add previews
           if ! git -C "$PREVIEW_DIR" diff --cached --quiet; then
@@ -150,4 +150,4 @@ jobs:
           set -euo pipefail
           printf '%s\n' 'Windows x64 portable pre-alpha. Rozpakuj ZIP i uruchom STREFA_ZERO.exe. Zachowaj userdata przy aktualizacji.' 'EXE uruchomione i zapis sprawdzony na Windows runnerze w trybie headless. Kadry PNG pochodza z tej samej sceny renderowanej na Linux/Mesa; nie sa pomiarem wydajnosci Windows.' "Source: $GITHUB_SHA" > release-notes.txt
           TAG="portable-0.1.$GITHUB_RUN_NUMBER"
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "STREFA ZERO Windows Portable 0.1.$GITHUB_RUN_NUMBER" --notes-file release-notes.txt package/STREFA_ZERO_Windows_Portable.zip package/SHA256.txt previews/*.png
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "STREFA ZERO Windows Portable 0.1.$GITHUB_RUN_NUMBER" --notes-file release-notes.txt package/STREFA_ZERO_Windows_Portable.zip package/SHA256.txt previews/screenshots/*.png

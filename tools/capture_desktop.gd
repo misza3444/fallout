@@ -37,7 +37,9 @@ func _capture() -> void:
 func _frame(filename: String) -> void:
 	for i in range(4):
 		await RenderingServer.frame_post_draw
-	var result := root.get_texture().get_image().save_png(output_dir.path_join(filename))
-	if result != OK:
+	var frame := root.get_texture().get_image()
+	var result := frame.save_png(output_dir.path_join(filename))
+	var preview_result := frame.save_jpg(output_dir.path_join(filename.get_basename() + ".jpg"), 0.9)
+	if result != OK or preview_result != OK:
 		push_error("Could not save screenshot: " + filename)
 		quit(1)
