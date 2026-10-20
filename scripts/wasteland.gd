@@ -176,7 +176,11 @@ func _terrain() -> void:
 	terrain_mesh.material_override = terrain_mat
 	add_child(terrain_mesh)
 	# Broad stable collision for the early traversal scene.
-	_box(self, Vector3(0, -1.6, 0), Vector3(255, 2.65, 255), "sand", true)
+	var collision_ground := _box(self, Vector3(0, -1.6, 0), Vector3(255, 2.65, 255), "sand", true)
+	# Keep the stable collision, but do not render a box through the terrain.
+	for child in collision_ground.get_children():
+		if child is MeshInstance3D:
+			child.hide()
 	# Distant low ridges provide silhouettes rather than a flat horizon.
 	for i in range(28):
 		var side := -1.0 if i % 2 == 0 else 1.0
