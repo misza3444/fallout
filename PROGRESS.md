@@ -8,17 +8,21 @@ Na prośbę użytkownika głównym wydaniem jest Windows x64: EXE + PCK w paczce
 
 Workflow `desktop.yml` eksportuje grę i uruchamia wyeksportowane EXE na Windows. Osobne zadanie renderuje rzeczywiste kadry menu, startu gracza, stacji i wraku z desktopowego Godota Linux/Mesa. To odbiór grafiki, nie pomiar wydajności Windows. Kadry trafiają do artefaktu oraz plików wydania w Releases. Automatyczna publikacja dodatkowej gałęzi została pominięta po odmowie uprawnienia workflows przez token Actions; nie rozszerzano uprawnień.
 
-Wynik pierwszego buildu: oczekuje. Etap 1 pozostaje ACTIVE. Testy mobilne nie są bramką etapu desktop. Web jest opcjonalny; workflow web uruchamiany ręcznie.
+Wynik: **SUCCESS**, commit `035363f4`, GitHub Actions run `39471186695`. Eksport Windows, uruchomienie gotowego EXE, 14 kontroli zapisu/ustawień/pauzy, renderowanie 4 kadrów i publikacja Releases zaliczone. Wydanie: [Windows Portable 0.1.6](https://github.com/misza3444/fallout/releases/tag/portable-0.1.6), ZIP 58 807 695 bajtów. Test EXE uruchamia zwykły punkt wejścia aplikacji z własnym argumentem diagnostycznym; standardowe szablony Godota 4.7 nie pozwalają na użyte wcześniej CLI --script. Etap 1 pozostaje ACTIVE. Testy mobilne nie są bramką etapu desktop. Web jest opcjonalny; workflow web uruchamiany ręcznie.
 
 ## Status
 
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** Windows x64 / portable ZIP; web i dotyk są opcjonalne.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** commit `93f51c9d`, GitHub Actions run `39245688236` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
+- **Ostatnia potwierdzona kompilacja:** Windows Portable `035363f4`, run `39471186695` — SUCCESS; wcześniejszy Web `93f51c9d`, run `39245688236` — SUCCESS.
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** https://misza3444.github.io/fallout/ odpowiada HTTP 200. Eksport jest automatycznie zapisywany na `gh-pages`, następnie publikowany przez GitHub Pages. Sam kod HTTP nie potwierdza wyglądu ani grywalności.
+
+## Odbiór desktopowego renderu (2026-10-20)
+
+Wygenerowano rzeczywiste kadry menu, startu gracza, stacji i wraku na Godot 4.7.2 / Linux Mesa OpenGL. Obejrzano kadr stacji: modele i tekstury renderują się, ale światło jest zbyt mocne, a wybrany kadr częściowo zasłania słup. To materiał do dalszego art passu, nie końcowa akceptacja grafiki. Pełna ręczna rozgrywka i pomiar wydajności na komputerze użytkownika pozostają otwarte. Headless test EXE nie zastępuje testu graficznego Windows.
 
 ## Uszczelnienie fundamentów (2026-10-19)
 
