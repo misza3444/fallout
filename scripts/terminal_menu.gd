@@ -420,7 +420,7 @@ func _build_pages(compact: bool) -> void:
 	var lines: Array[String] = [
 		"STREFA ZERO  /  PROTOKÓŁ 2189",
 		"Autorskie RPG 3D o świecie, który przetrwał katastrofę, lecz stracił swoją pamięć.",
-		"Przeglądarkowa wersja pre-alpha. Godot 4 / WebGL 2. Budujemy świat, zadania, postacie i wybory, których konsekwencje pozostaną na długo.",
+		"Wersja pre-alpha. Godot 4 / Windows Portable. Budujemy świat, zadania, postacie i wybory, których konsekwencje pozostaną na długo.",
 		"ZAPISY: LOKALNE  |  SYGNAŁ: NIESTABILNY",
 		"Projekt jest niezależny i nie jest powiązany z marką Fallout."
 	]
@@ -430,14 +430,17 @@ func _build_pages(compact: bool) -> void:
 	_button(about, "◀  POWRÓT", show_home, compact)
 
 	var exit_page := _section("exit", "POŁĄCZENIE / ZAKOŃCZ SESJĘ", compact)
-	var notice := _label(exit_page,
-		"WERSJA PRZEGLĄDARKOWA\nAby zakończyć sesję, zamknij kartę przeglądarki.\n\nPrzed wyjściem zapisz wyprawę przyciskiem poniżej. Zapis jest lokalny dla tej przeglądarki.",
-		16, CREAM)
+	var exit_text := "WERSJA WINDOWS PORTABLE\nPrzed zamknięciem gry zapisz wyprawę przyciskiem poniżej.\nZapisy i ustawienia: folder userdata obok gry."
+	if OS.has_feature("web"):
+		exit_text = "WERSJA PRZEGLĄDARKOWA\nPrzed zamknięciem karty zapisz wyprawę przyciskiem poniżej.\nZapis jest lokalny dla tej przeglądarki."
+	var notice := _label(exit_page, exit_text, 16, CREAM)
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	save_feedback = _label(exit_page, save_message, 14, AMBER if save_failed else GREEN)
 	save_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	save_btn = _button(exit_page, "ZAPISZ POZYCJĘ GRACZA", save_requested.emit, compact)
 	save_btn.disabled = not session_in_progress
+	if not OS.has_feature("web"):
+		_button(exit_page, "ZAMKNIJ GRĘ", exit_requested.emit, compact)
 	_button(exit_page, "◀  POWRÓT", show_home, compact)
 
 	for name in pages:
@@ -506,7 +509,7 @@ func _save_and_home() -> void:
 
 func _load_prefs() -> void:
 	var cfg := ConfigFile.new()
-	if cfg.load("user://terminal_ui.cfg") == OK:
+	if cfg.load(GameState.terminal_prefs_path) == OK:
 		accent_name = str(cfg.get_value("terminal", "palette", "ZIELONY FOSFOR"))
 		accent = AMBER if accent_name == "BURSZTYN" else GREEN
 		reduce_motion = bool(cfg.get_value("terminal", "reduced_motion", false))
@@ -517,7 +520,7 @@ func _save_prefs() -> Error:
 	cfg.set_value("terminal", "palette", accent_name)
 	cfg.set_value("terminal", "reduced_motion", reduce_motion)
 	cfg.set_value("terminal", "sounds", ui_sound)
-	return cfg.save("user://terminal_ui.cfg")
+	return cfg.save(GameState.terminal_prefs_path)
 
 func _build_sound() -> void:
 	_load_prefs()

@@ -1,7 +1,9 @@
 extends Node
 
-const SETTINGS_PATH := "user://settings.cfg"
-const SAVE_PATH := "user://save.cfg"
+var storage_root: String = "user://"
+var settings_path: String = "user://settings.cfg"
+var save_path: String = "user://save.cfg"
+var terminal_prefs_path: String = "user://terminal_ui.cfg"
 
 var sensitivity: float = 0.11
 var fov: float = 76.0
@@ -9,12 +11,19 @@ var quality: int = 1
 var has_save: bool = false
 
 func _ready() -> void:
+	if OS.has_feature("portable") and not OS.has_feature("editor"):
+		storage_root = OS.get_executable_path().get_base_dir().path_join("userdata")
+		# Report write failures instead of silently moving saves to AppData.
+		DirAccess.make_dir_recursive_absolute(storage_root)
+		settings_path = storage_root.path_join("settings.cfg")
+		save_path = storage_root.path_join("save.cfg")
+		terminal_prefs_path = storage_root.path_join("terminal_ui.cfg")
 	load_settings()
 	has_save = not read_position().is_empty()
 
 func load_settings() -> void:
 	var config := ConfigFile.new()
-	if config.load(SETTINGS_PATH) == OK:
+	if config.load(settings_path) == OK:
 		sensitivity = clampf(float(config.get_value("controls", "sensitivity", 0.11)), 0.03, 0.4)
 		fov = clampf(float(config.get_value("camera", "fov", 76)), 65, 100)
 		quality = clampi(int(config.get_value("graphics", "quality", 1)), 0, 2)
@@ -24,7 +33,7 @@ func store_settings() -> Error:
 	config.set_value("controls", "sensitivity", sensitivity)
 	config.set_value("camera", "fov", fov)
 	config.set_value("graphics", "quality", quality)
-	return config.save(SETTINGS_PATH)
+	return config.save(settings_path)
 
 func save_position(pos: Vector3, yaw: float, pitch: float) -> Error:
 	if not _valid_position(pos) or not is_finite(yaw) or not is_finite(pitch):
@@ -33,13 +42,13 @@ func save_position(pos: Vector3, yaw: float, pitch: float) -> Error:
 	config.set_value("player", "position", pos)
 	config.set_value("player", "yaw", yaw)
 	config.set_value("player", "pitch", pitch)
-	var result := config.save(SAVE_PATH)
+	var result := config.save(save_path)
 	has_save = not read_position().is_empty()
 	return result
 
 func read_position() -> Dictionary:
 	var config := ConfigFile.new()
-	if config.load(SAVE_PATH) != OK:
+	if config.load(save_path) != OK:
 		return {}
 	for key in ["position", "yaw", "pitch"]:
 		if not config.has_section_key("player", key):

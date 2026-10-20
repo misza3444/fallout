@@ -1,11 +1,19 @@
 # STREFA ZERO — STAN REALIZACJI
 
-Ostatnia aktualizacja: 2026-10-19. Projekt: https://github.com/misza3444/fallout
+Ostatnia aktualizacja: 2026-10-20. Projekt: https://github.com/misza3444/fallout
+
+## Windows Portable — zmiana platformy (2026-10-20)
+
+Na prośbę użytkownika głównym wydaniem jest Windows x64: EXE + PCK w paczce `STREFA_ZERO_Windows_Portable.zip`, bez instalatora. Zapisy, ustawienia i preferencje terminala w `userdata/` obok EXE. Dane przeglądarkowe nie migrują automatycznie. Przy aktualizacji zachować userdata.
+
+Workflow `desktop.yml` eksportuje grę i uruchamia wyeksportowane EXE na Windows. Osobne zadanie renderuje rzeczywiste kadry menu, startu gracza, stacji i wraku z desktopowego Godota Linux/Mesa. To odbiór grafiki, nie pomiar wydajności Windows. Kadry trafiają do artefaktu i osobnej gałęzi `desktop-previews`; po powodzeniu powstaje wydanie do pobrania w Releases.
+
+Wynik pierwszego buildu: oczekuje. Etap 1 pozostaje ACTIVE. Testy mobilne nie są bramką etapu desktop. Web jest opcjonalny; workflow web uruchamiany ręcznie.
 
 ## Status
 
 - **Etap:** 1/10 — ACTIVE (nieukończony).
-- **Priorytetowe środowisko:** przeglądarka HTML5 / WebGL 2; sterowanie mobilne jako cel wymagający weryfikacji.
+- **Priorytetowe środowisko:** Windows x64 / portable ZIP; web i dotyk są opcjonalne.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
 - **Ostatnia potwierdzona kompilacja:** commit `93f51c9d`, GitHub Actions run `39245688236` — SUCCESS (import projektu, uruchomienie sceny w headless, eksport Web; bez błędów wykrytych przez kontrolę logów).
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
@@ -79,9 +87,9 @@ Nowy moduł `scripts/terminal_menu.gd` z dedykowanymi podmenu, archiwum, ustawie
 - [x] Pierwsza scenografia 3D i autorskie materiały obecne w kodzie
 - [x] Co najmniej jeden udany test uruchomienia headless oraz eksport HTML5
 - [x] Publikacja adresu przeglądarkowego (GitHub Pages; HTTP 200 i udane wdrożenie — nie oznacza odbioru rozgrywki)
-- [ ] Ręczna weryfikacja menu, sterowania, zapisu i wyglądu w realnej przeglądarce
+- [ ] Ręczna weryfikacja menu, sterowania, zapisu i wyglądu wydania Windows
 - [ ] Dopracowanie i zatwierdzenie oprawy wizualnej pierwszej sceny
-- [ ] Test podstawowych funkcji i wydajności na iPhonie
+- [ ] Odbiór działania i wydajności wydania Windows Portable (iPhone: opcjonalny)
 
 Nie oznaczać tego etapu jako DONE, dopóki wszystkie wymagane kryteria nie zostaną zweryfikowane.
 

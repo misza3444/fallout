@@ -1,5 +1,5 @@
 extends Node3D
-## Web-first scene shell: cinematic menu, player loop, saving, responsive HUD.
+## Desktop and optional web scene shell: cinematic menu, player loop, saving, responsive HUD.
 
 const WASTELAND = preload("res://scripts/wasteland.gd")
 const PLAYER = preload("res://scripts/player.gd")
@@ -29,6 +29,18 @@ func _ready() -> void:
 	_build_hud()
 	_update_menu()
 	_update_pointer()
+	if not OS.has_feature("web"):
+		get_tree().auto_accept_quit = false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and not OS.has_feature("web") and terminal != null:
+		if in_game:
+			_pause_game()
+		terminal.show_page("exit")
+
+func _quit_game() -> void:
+	if not OS.has_feature("web"):
+		get_tree().quit()
 
 func _define_inputs() -> void:
 	var bindings := {
@@ -146,7 +158,7 @@ func _build_menu() -> void:
 	terminal.new_game_requested.connect(_new_game)
 	terminal.continue_requested.connect(_continue_game)
 	terminal.save_requested.connect(_manual_save)
-	terminal.exit_requested.connect(_pause_game)
+	terminal.exit_requested.connect(_quit_game)
 
 
 func _manual_save() -> void:

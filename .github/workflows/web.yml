@@ -1,16 +1,5 @@
 name: Build and publish STREFA ZERO Web
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'project.godot'
-      - 'export_presets.cfg'
-      - 'scenes/**'
-      - 'scripts/**'
-      - 'shaders/**'
-      - 'assets/**'
-      - 'tools/check_foundation.gd'
-      - '.github/workflows/web.yml'
   workflow_dispatch:
 
 permissions:

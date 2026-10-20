@@ -13,8 +13,13 @@ func _expect(condition: bool, message: String) -> void:
 
 func _run() -> void:
 	var state: Node = root.get_node("GameState")
+	if OS.has_feature("portable") and not OS.has_feature("editor"):
+		var expected := OS.get_executable_path().get_base_dir().path_join("userdata")
+		_expect(state.storage_root == expected, "Portable storage is not beside executable")
+		_expect(DirAccess.dir_exists_absolute(expected), "Portable userdata folder missing")
+		print("Portable storage: ", state.storage_root)
 	var originals: Dictionary = {}
-	for path in [state.SAVE_PATH, state.SETTINGS_PATH]:
+	for path in [state.save_path, state.settings_path]:
 		originals[path] = FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
 
 	var position := Vector3(4.5, 1.2, -18.0)
@@ -28,17 +33,17 @@ func _run() -> void:
 
 	var corrupt := ConfigFile.new()
 	corrupt.set_value("player", "position", "not a vector")
-	corrupt.save(state.SAVE_PATH)
+	corrupt.save(state.save_path)
 	_expect(state.read_position().is_empty(), "Corrupt position accepted")
 	corrupt.clear()
 	corrupt.set_value("player", "position", position)
 	corrupt.set_value("player", "yaw", "bad angle")
 	corrupt.set_value("player", "pitch", 0.0)
-	corrupt.save(state.SAVE_PATH)
+	corrupt.save(state.save_path)
 	_expect(state.read_position().is_empty(), "Corrupt angle accepted")
 	corrupt.clear()
 	corrupt.set_value("other", "unused", true)
-	corrupt.save(state.SAVE_PATH)
+	corrupt.save(state.save_path)
 	_expect(state.read_position().is_empty(), "Missing player section accepted")
 
 	state.fov = 88.0

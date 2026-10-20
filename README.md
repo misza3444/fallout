@@ -1,8 +1,8 @@
-# ☢️ STREFA ZERO — RPG 3D (Web)
+# ☢️ STREFA ZERO — RPG 3D (Windows Portable)
 
 **Status:** etap 1 rozpoczęty, weryfikacja wydania 0.1 w toku.  
 **Silnik:** Godot 4.7.2 / GDScript / renderer Compatibility (WebGL 2).  
-**Platforma priorytetowa:** przeglądarka internetowa, również iPhone/Android po weryfikacji wydajności i dotyku.  
+**Platforma priorytetowa:** Windows x64, samodzielne EXE w portable ZIP. Web/mobile są opcjonalne.  
 **Docelowo:** autorskie RPG z otwartym światem, eksploracją, walką, NPC, dialogami, frakcjami i konsekwencjami decyzji.
 
 ## Zrealizowane w kodzie (nie oznacza jeszcze zaliczonego testu rozgrywki)
@@ -16,6 +16,16 @@
 - GitHub Actions: walidacja skryptów, test headless, eksport HTML5 do `public/`, automatyczna publikacja na gałęzi `gh-pages` i artefakt do pobrania.
 
 **Uwaga:** to pierwszy etap techniczno-wizualny; NIE jest to jeszcze pełna gra, system questów ani otwarty świat docelowej skali.
+
+## Wersja Windows Portable
+
+Pobierz ZIP z [Releases](https://github.com/misza3444/fallout/releases). Rozpakuj całość do zapisywalnego folderu i uruchom `STREFA_ZERO.exe`. Plik `STREFA_ZERO.pck` musi pozostać obok EXE. Godot, przeglądarka ani instalator nie są potrzebne.
+
+Zapisy i ustawienia: `userdata/` obok EXE. Przenoś cały folder i zachowaj userdata przy aktualizacji. Nie uruchamiaj gry bezpośrednio z ZIP-a. Zapis z przeglądarki nie migruje automatycznie.
+
+Menu Wyjście udostępnia zapis i zamknięcie aplikacji. Przycisk X okna otwiera tę stronę, aby można było zapisać przed zamknięciem.
+
+[Workflow desktop](https://github.com/misza3444/fallout/actions/workflows/desktop.yml) buduje i sprawdza EXE na Windows. Artefakt `desktop-previews` i gałąź `desktop-previews` zawierają rzeczywiste kadry tego samego projektu renderowanego na Linux/Mesa. Nie reprezentują wydajności karty graficznej użytkownika.
 
 ## Uruchomienie lokalnie
 
@@ -40,7 +50,7 @@
 
 ## Gra online — GitHub Pages
 
-**Aktualna droga publikacji: GitHub Pages**. Nie wymaga Vercel ani osobnego serwera. Gałąź [gh-pages](https://github.com/misza3444/fallout/tree/gh-pages) zawiera pliki gry HTML5 w katalogu głównym. Każda zmiana skryptów, scen lub shaderów na `main` powoduje automatyczne zbudowanie nowego eksportu Godot i aktualizację `gh-pages` przez [GitHub Actions](https://github.com/misza3444/fallout/actions/workflows/web.yml).
+**Aktualna droga publikacji: GitHub Pages**. Nie wymaga Vercel ani osobnego serwera. Gałąź [gh-pages](https://github.com/misza3444/fallout/tree/gh-pages) zawiera pliki gry HTML5 w katalogu głównym. Po przejściu na Windows eksport web jest opcjonalny: uruchamiany ręcznie przez [GitHub Actions](https://github.com/misza3444/fallout/actions/workflows/web.yml).
 
 ### Konfiguracja strony (Pages jest już włączone)
 

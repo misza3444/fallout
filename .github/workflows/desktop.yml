@@ -1,0 +1,153 @@
+name: Build Windows Portable and desktop previews
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'project.godot'
+      - 'export_presets.cfg'
+      - 'scenes/**'
+      - 'scripts/**'
+      - 'shaders/**'
+      - 'assets/**'
+      - 'tools/*.gd'
+      - 'packaging/**'
+      - '.github/workflows/desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: strefa-zero-desktop
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chickensoft-games/setup-godot@v2.4.1
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: true
+      - name: Import and export Windows
+        shell: pwsh
+        run: |
+          godot --headless --path . --editor --quit 2>&1 | Tee-Object import.log
+          if ($LASTEXITCODE -ne 0 -or (Select-String -Path import.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Import failed' }
+          New-Item -ItemType Directory -Force build/windows | Out-Null
+          godot --headless --path . --export-release 'Windows Portable' build/windows/STREFA_ZERO.exe 2>&1 | Tee-Object export.log
+          if ($LASTEXITCODE -ne 0 -or (Select-String -Path export.log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Export failed' }
+          if (!(Test-Path build/windows/STREFA_ZERO.exe) -or !(Test-Path build/windows/STREFA_ZERO.pck)) { throw 'Missing game files' }
+      - name: Verify exported EXE and portable storage
+        shell: pwsh
+        run: |
+          $game = (Resolve-Path build/windows/STREFA_ZERO.exe).Path
+          $log = Join-Path $env:RUNNER_TEMP 'portable-check.log'
+          $process = Start-Process -FilePath $game -ArgumentList @('--headless', '--script', 'res://tools/check_foundation.gd', '--log-file', $log) -Wait -PassThru
+          Get-Content $log
+          if ($process.ExitCode -ne 0 -or (Select-String -Path $log -Pattern 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:')) { throw 'Portable check failed' }
+          if (!(Select-String -Path $log -Pattern 'Foundation persistence checks: PASS')) { throw 'Checks did not finish' }
+          if (!(Test-Path build/windows/userdata)) { throw 'Portable directory was not created beside EXE' }
+      - name: Package portable game
+        shell: pwsh
+        run: |
+          Copy-Item packaging/README_PORTABLE.txt build/windows/CZYTAJ_MNIE.txt
+          Copy-Item assets/ASSET_SOURCES.md build/windows/ASSET_SOURCES.md
+          @("Commit: $env:GITHUB_SHA", "Build: $env:GITHUB_RUN_ID", "Windows x64 / Godot 4.7.2 / Compatibility") | Set-Content build/windows/BUILD_INFO.txt
+          Compress-Archive -Path build/windows/* -DestinationPath build/STREFA_ZERO_Windows_Portable.zip
+          $hash = (Get-FileHash build/STREFA_ZERO_Windows_Portable.zip -Algorithm SHA256).Hash
+          "$hash  STREFA_ZERO_Windows_Portable.zip" | Set-Content build/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: STREFA_ZERO_Windows_Portable
+          path: |
+            build/STREFA_ZERO_Windows_Portable.zip
+            build/SHA256.txt
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: windows-build-logs
+          path: '*.log'
+
+  previews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chickensoft-games/setup-godot@v2.4.1
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: false
+      - name: Prepare desktop renderer
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Import assets
+        run: godot --headless --path . --editor --quit
+      - name: Capture actual rendered scene
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p build/screenshots
+          timeout 150 xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --rendering-method gl_compatibility --rendering-driver opengl3 --resolution 1280x720 --script res://tools/capture_desktop.gd 2>&1 | tee build/render.log
+          if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:' build/render.log; then exit 1; fi
+          test -s build/screenshots/01_menu.png
+          test -s build/screenshots/03_station.png
+          test -s build/screenshots/04_wreck.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-previews
+          path: |
+            build/screenshots/*.png
+            build/render.log
+          retention-days: 30
+      - name: Save inspectable frames on preview branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          PREVIEW_DIR="$RUNNER_TEMP/strefa-preview"
+          if git ls-remote --exit-code --heads origin desktop-previews; then
+            git fetch origin desktop-previews
+            git worktree add -B desktop-previews "$PREVIEW_DIR" origin/desktop-previews
+          else
+            git worktree add -b desktop-previews "$PREVIEW_DIR" HEAD
+          fi
+          mkdir -p "$PREVIEW_DIR/previews"
+          cp build/screenshots/*.png "$PREVIEW_DIR/previews/"
+          printf '%s\n' "$GITHUB_SHA" > "$PREVIEW_DIR/previews/SOURCE_COMMIT.txt"
+          git -C "$PREVIEW_DIR" add previews
+          if ! git -C "$PREVIEW_DIR" diff --cached --quiet; then
+            git -C "$PREVIEW_DIR" commit -m "docs: actual desktop renders [skip ci]"
+            git -C "$PREVIEW_DIR" push origin HEAD:desktop-previews
+          fi
+
+  release:
+    needs: [windows, previews]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: STREFA_ZERO_Windows_Portable
+          path: package
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-previews
+          path: previews
+      - name: Publish downloadable portable build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' 'Windows x64 portable pre-alpha. Rozpakuj ZIP i uruchom STREFA_ZERO.exe. Zachowaj userdata przy aktualizacji.' 'EXE uruchomione i zapis sprawdzony na Windows runnerze w trybie headless. Kadry PNG pochodza z tej samej sceny renderowanej na Linux/Mesa; nie sa pomiarem wydajnosci Windows.' "Source: $GITHUB_SHA" > release-notes.txt
+          TAG="portable-0.1.$GITHUB_RUN_NUMBER"
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "STREFA ZERO Windows Portable 0.1.$GITHUB_RUN_NUMBER" --notes-file release-notes.txt package/STREFA_ZERO_Windows_Portable.zip package/SHA256.txt previews/*.png

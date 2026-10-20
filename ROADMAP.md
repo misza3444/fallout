@@ -1,6 +1,6 @@
 # ROADMAP — STREFA ZERO (RPG 3D)
 
-> Dokument planistyczny. Aktualizacja: 2026-10-19. **Żaden etap implementacji nie jest jeszcze ukończony.**
+> Dokument planistyczny. Aktualizacja: 2026-10-20. **Żaden etap implementacji nie jest jeszcze ukończony.**
 >
 > Statusy: ✅ DONE / 🟡 ACTIVE / ⬜ PENDING. Aktualny etap: **1 z 10**.
 
@@ -13,7 +13,7 @@ Zbudować samodzielną, rozwijalną grę RPG 3D w oryginalnym świecie postapoka
 ## Decyzje i założenia
 
 - **Technologia robocza:** Godot 4 / GDScript, Blender (eksport GLB), dane w Resources i/lub JSON, GitHub do kontroli zmian.
-- **Platforma potwierdzona:** przeglądarka HTML5 / WebGL 2, z uwzględnieniem smartfonów i dotyku. Renderer Compatibility. Windows nie jest platformą priorytetową.
+- **Platforma potwierdzona (zmiana użytkownika 2026-10-19):** Windows x64, samodzielny EXE i portable ZIP. Web/mobile opcjonalne. Renderer Compatibility na pierwsze wydanie desktop.
 - **Kamera:** FPP/TPP.
 - **Tryb:** singleplayer.
 - **Świat:** sektory, selektywne wczytywanie i trwały stan świata.
@@ -23,11 +23,11 @@ Zbudować samodzielną, rozwijalną grę RPG 3D w oryginalnym świecie postapoka
 
 ## Najbliższy blok — domknięcie etapu 1
 
-- Ujednolicić plan z potwierdzoną platformą web i istniejącą publikacją (wykonane 2026-10-19).
+- Ujednolicić plan ze zmianą priorytetu na Windows Portable i przygotować automatyczny build EXE.
 - Uszczelnić zapis/odczyt i komunikaty o błędach oraz reset dotykowego sterowania przy pauzie.
-- Zweryfikować menu, ustawienia po restarcie, zapis/wczytanie i ruch w przeglądarce z WebGL2.
+- Zweryfikować menu, ustawienia po restarcie, zapis/wczytanie i ruch w wyeksportowanym wydaniu Windows.
 - Odebrać wizualnie pierwszą lokację: stacja, nowe dystrybutory, wrak i materiały; następnie poprawić pozostałe placeholdery otoczenia.
-- Sprawdzić sterowanie dotykowe i FPS na fizycznym iPhonie. Emulacja rozmiaru ekranu nie zastępuje tego testu.
+- Sprawdzić EXE i przenoszenie zapisów wraz z całym folderem portable. Testy mobilne są opcjonalne i nie blokują etapu desktop.
 
 Oprawa jest priorytetem już w etapie 1; etap 9 oznacza końcowe dopracowanie, a nie początek pracy nad grafiką. Etapy 2–10 pozostają nieukończone.
 
@@ -36,7 +36,7 @@ Oprawa jest priorytetem już w etapie 1; etap 9 oznacza końcowe dopracowanie, a
 ### 🟡 1. Fundament projektu i architektura — ACTIVE
 
 **Zakres:**
-- platforma web potwierdzona; doprecyzowanie wymagań sprzętowych na podstawie pomiarów na docelowych urządzeniach;
+- platforma Windows portable potwierdzona; doprecyzowanie wymagań sprzętowych na podstawie pomiarów na docelowych urządzeniach;
 - utworzenie projektu Godot i uporządkowanych katalogów (np. scenes, scripts, assets, data, ui);
 - Game Manager i komunikacja między modułami przez zdarzenia/sygnały;
 - menu główne, ustawienia, ekran ładowania, zarządzanie scenami;
