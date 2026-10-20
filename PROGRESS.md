@@ -10,7 +10,7 @@ Ostatnia aktualizacja: 2026-10-20. Projekt: https://github.com/misza3444/fallout
 - Ciepła lampa awaryjna w sklepie i lokalne światło pod zadaszeniem.
 - Kamera menu i widok stacji przeniesione na przedpole po lewej stronie; słup szyldu nie stoi bezpośrednio przed obiektywem.
 - Dodany kadr dystrybutora. Dla tej iteracji CI renderuje również poprzednie materiały i światło z tą samą kamerą, aby porównanie było miarodajne.
-- Wynik buildu i odbioru renderu: oczekuje. Etap 1 nadal ACTIVE.
+- Wynik: **SUCCESS**, commit `b2ae1a6c`, run `39474104863`, wydanie [Windows Portable 0.1.8](https://github.com/misza3444/fallout/releases/tag/portable-0.1.8). Eksport Windows, kontrola EXE i zapisów, renderowanie oraz publikacja zaliczone. Obejrzano rzeczywiste kadry przed/po z identycznej kamery: usunięte przepalenia rdzy i jasne plamy od bryły kolizji, spokojniejsze kolory gruntu, czytelny widok całej stacji. Etap 1 nadal ACTIVE; ręczna rozgrywka i wydajność Windows pozostają do odbioru.
 
 ## Windows Portable — zmiana platformy (2026-10-20)
 
@@ -25,7 +25,7 @@ Wynik: **SUCCESS**, commit `035363f4`, GitHub Actions run `39471186695`. Eksport
 - **Etap:** 1/10 — ACTIVE (nieukończony).
 - **Priorytetowe środowisko:** Windows x64 / portable ZIP; web i dotyk są opcjonalne.
 - **Silnik:** Godot 4.7.2, GDScript, renderer Compatibility.
-- **Ostatnia potwierdzona kompilacja:** Windows Portable `035363f4`, run `39471186695` — SUCCESS; wcześniejszy Web `93f51c9d`, run `39245688236` — SUCCESS.
+- **Ostatnia potwierdzona kompilacja:** Windows Portable 0.1.8 `b2ae1a6c`, run `39474104863` — SUCCESS; wcześniejszy Web `93f51c9d`, run `39245688236` — SUCCESS.
 - **Ekran informacji o projekcie:** dołączony i uwzględniony w udanym buildzie.
 - **Wizualny odbiór gry w przeglądarce:** NIEZWERYFIKOWANY.
 - **Publikacja pod publicznym adresem:** https://misza3444.github.io/fallout/ odpowiada HTTP 200. Eksport jest automatycznie zapisywany na `gh-pages`, następnie publikowany przez GitHub Pages. Sam kod HTTP nie potwierdza wyglądu ani grywalności.
